@@ -1,0 +1,15 @@
+{
+  "name": "generated-fashion",
+  "version": "0.0.0",
+  "description": "A website where you can create and buy ai generated shirts",
+  "author": {
+    "name": "Zebreus",
+    "email": "lennarteichhorn@googlemail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zebreus/generated-fashion"
+  },
+  "license": "MIT",
+  "type": "module"
+}
