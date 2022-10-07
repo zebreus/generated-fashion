@@ -14,6 +14,7 @@
   "type": "module",
   "devDependencies": {
     "@emotion/eslint-plugin": "^11.10.0",
+    "@next/eslint-plugin-next": "^12.3.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@types/eslint": "^8.4.6",
@@ -45,16 +46,22 @@
   },
   "scripts": {
     "lint": "tsc --noEmit && prettier . --check && eslint --cache --ignore-path .gitignore --ext ts,js,tsx,jsx .",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json && resolve-tspaths -p tsconfig.build.json",
+    "build": "next build",
     "prepack": "pinst --disable",
     "format": "prettier --write .",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "postinstall": "husky install",
-    "postpack": "pinst --enable"
+    "postpack": "pinst --enable",
+    "start": "next dev",
+    "start:build": "next start"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
+    "next": "^12.3.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
-  }
+  },
+  "keywords": [
+    "nextjs"
+  ]
 }

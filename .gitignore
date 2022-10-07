@@ -17,3 +17,10 @@ lerna-debug.log*
 dist/
 # eslint
 .eslintcache
+# next
+next-env.d.ts
+.vercel
+/.next
+/out
+/build
+.env*.local

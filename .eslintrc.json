@@ -6,7 +6,8 @@
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
-    "plugin:jsx-a11y/recommended"
+    "plugin:jsx-a11y/recommended",
+    "plugin:@next/next/core-web-vitals"
   ],
   "plugins": ["import", "react", "react-hooks", "jsx-a11y", "@emotion"],
   "rules": {
@@ -70,7 +71,14 @@
     "react/no-unknown-property": "off",
     "react/prop-types": "off",
     "@emotion/no-vanilla": "error",
-    "@emotion/syntax-preference": ["error", "string"]
+    "@emotion/syntax-preference": ["error", "string"],
+    "jsx-a11y/alt-text": [
+      "error",
+      {
+        "elements": ["img"],
+        "img": ["Image"]
+      }
+    ]
   },
   "settings": {
     "import/external-module-folders": ["node_modules", "node_modules/@types"],
