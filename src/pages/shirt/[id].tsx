@@ -71,7 +71,15 @@ export default function ShirtPreview() {
         {url ? (
           <Image src={url} alt="shirt" width={400} height={400} />
         ) : (
-          <h2 style={{ color: "red" }}>No shirt found... yet</h2>
+          <h2
+            css={css`
+              width: 400px;
+              height: 400px;
+              color: red;
+            `}
+          >
+            Generating shirt...
+          </h2>
         )}
       </main>
 
