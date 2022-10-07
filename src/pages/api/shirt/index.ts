@@ -20,10 +20,9 @@ const handler: NextApiHandler = async (req, res) => {
     res.status(400).json({ detail: "prompt is too long" })
     return
   }
-  const encodedPrompt = encodeURIComponent(prompt)
   const prediction = await predict({
     model: "stability-ai/stable-diffusion",
-    input: { prompt: encodedPrompt },
+    input: { prompt: prompt },
     token: process.env["REPLICATE_TOKEN"] || "",
   })
 

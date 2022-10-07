@@ -3,7 +3,6 @@ import { getPrediction } from "replicate-api"
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introductio
 const handler: NextApiHandler = async (req, res) => {
-  console.log("API call")
   const id = typeof req.query["id"] === "string" ? req.query["id"] : req.query["id"]?.[0]
   if (!id) {
     res.status(400).json({ detail: "id is required" })
