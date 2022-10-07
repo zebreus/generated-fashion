@@ -1,10 +1,17 @@
 import { css } from "@emotion/react"
+import { CoolShirt } from "components/CoolShirt"
+import { useImage } from "hooks/useImage"
 import Head from "next/head"
 import Image from "next/image"
+import Link from "next/link"
 import { useRouter } from "next/router"
 
 export default function ShirtPreview() {
   const router = useRouter()
+  const id = typeof router.query["id"] === "string" ? router.query["id"] : router.query["id"]?.[0]
+
+  const url = useImage(id)
+  console.log(url)
   return (
     <div
       css={css`
@@ -47,40 +54,25 @@ export default function ShirtPreview() {
             text-align: center;
           `}
         >
-          Create shirts with <a href="https://nextjs.org">stable diffusion</a> (AI!!!)
+          SHIRT! SHIRT! SHIRT! <Link href="/">ANOTHER ONE!</Link> (AI!!!)
         </h1>
-
-        <textarea
-          id="textareaJOOO"
+        <div
           css={css`
-            margin: 4rem 0;
-            line-height: 1.5;
-            font-size: 1.5rem;
-            text-align: center;
+            display: flex;
+            flex-direction: row;
           `}
-          defaultValue="ruiner, cyber future, hello darkness, drawn, her head break, red and black color scheme, blade runner, Benedykt Szneider, modular synth, red on black"
-        />
-
-        <button
-          onClick={async () => {
-            console.log("clicked")
-            const textarea = document.getElementById("textareaJOOO") as HTMLTextAreaElement
-            const content = textarea.value
-            const response = await fetch("/api/shirt", {
-              body: JSON.stringify({ prompt: content }),
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            })
-            const responseJson = await response.json()
-            const id = responseJson.id
-            if (!id) {
-              alert("Something went wrong, no id")
-            }
-            router.push("/shirt/" + id)
-          }}
         >
-          GENERATE NOW!!!
-        </button>
+          {" "}
+          <CoolShirt url={url} />
+          <CoolShirt url={url} />
+          <CoolShirt url={url} />
+        </div>
+
+        {url ? (
+          <Image src={url} alt="shirt" width={400} height={400} />
+        ) : (
+          <h2 style={{ color: "red" }}>No shirt found... yet</h2>
+        )}
       </main>
 
       <footer
