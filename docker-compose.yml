@@ -1,0 +1,30 @@
+version: "3.1"
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 9990:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 3f98wjrew9feuire
+    volumes:
+      - ./.local-data/postgres:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: cxy7v8w44
+      PGADMIN_LISTEN_PORT: 9991
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - ./.pgadmin/servers.json:/pgadmin4/servers.json
+      - ./.pgadmin/pgpass:/pgadmin4/pgpass
+    ports:
+      - 9991:9991
+    entrypoint: >
+      /bin/sh -c "cp -f /pgadmin4/pgpass /var/lib/pgadmin/; chmod 600 /var/lib/pgadmin/pgpass; chown pgadmin:pgadmin
+      /var/lib/pgadmin/pgpass; /entrypoint.sh "
