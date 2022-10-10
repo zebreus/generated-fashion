@@ -8,6 +8,7 @@ generator client {
 datasource db {
   provider = "postgres"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum ReplicateState {
@@ -19,12 +20,19 @@ enum ReplicateState {
 }
 
 model Image {
-  id    String @id
-  replicateId String @unique
+  id             String         @id
+  replicateId    String         @unique
   replicateState ReplicateState
-  imageData Bytes?
-  imageMimeType String?
-  prompt  String
-  seed Int
-  modelVersion String
+  prompt         String
+  seed           Int
+  modelVersion   String
+  image          ImageData?     @relation(fields: [imageDataId], references: [id])
+  imageDataId    Int?
+}
+
+model ImageData {
+  id       Int     @id @default(autoincrement())
+  data     Bytes
+  mimeType String
+  Image    Image[]
 }

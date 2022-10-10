@@ -5166,10 +5166,10 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replicate-api@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/replicate-api/-/replicate-api-0.1.1.tgz#718d05534882f0031afdc8e50d0d912c99d8da81"
-  integrity sha512-akhxRfMVoSO/ei6rAgKjpxjXv5FRHYXple8TNWKOlNycKdNRvgYa+I1UXsLRzuhPYojA+W0vzP6PL9BZ4E0pGg==
+replicate-api@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/replicate-api/-/replicate-api-0.1.2.tgz#e43b8d7a1ef2cfdb0178638d81e57653058a0bf1"
+  integrity sha512-9A81WXtidDociDE5VM0Z/o7GQdCusJ+3OsQ6sW15J+gWtHWWUDvaJHMrcwreEXNzXTWlvy7kKhnuqZPZhhyF7g==
 
 require-directory@^2.1.1:
   version "2.1.1"

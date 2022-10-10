@@ -1,5 +1,5 @@
 import { prisma } from "functions/prisma"
-import fetch from "node-fetch"
+import { updatePrismaImage } from "functions/updatePrismaImage"
 import { getPrediction } from "replicate-api"
 
 export const getPrismaImage = async (id: string) => {
@@ -29,26 +29,8 @@ export const getPrismaImage = async (id: string) => {
   }
 
   if (prediction.status !== image.replicateState) {
-    const imageUrl = prediction.output?.[0] as string | undefined
-    const downloadedImage = imageUrl ? await getImage(imageUrl) : undefined
-    const updatedImage = await prisma.image.update({
-      where: {
-        id: id,
-      },
-      data: {
-        replicateState: prediction.status,
-        ...(downloadedImage ? { imageData: downloadedImage.imageData, imageMimeType: downloadedImage.mimeType } : {}),
-      },
-    })
-
-    return updatedImage
+    return await updatePrismaImage(prediction)
   }
-}
 
-const getImage = async (url: string) => {
-  const response = await fetch(url)
-  const buffer = await response.arrayBuffer()
-  const imageData = Buffer.from(buffer)
-  const mimeType = response.headers.get("content-type")
-  return { imageData, mimeType }
+  return image
 }

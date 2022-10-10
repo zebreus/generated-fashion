@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import is from "@sindresorhus/is"
 import { generateId } from "functions/generateId"
+import { getOwnUrl } from "functions/getOwnUrl"
 import { NextApiHandler } from "next"
 import { predict } from "replicate-api"
 
@@ -30,6 +31,7 @@ const handler: NextApiHandler = async (req, res) => {
     version: replicateVersion,
     input: { prompt: prompt, steps: 10, seed: seed },
     token: process.env["REPLICATE_TOKEN"] || "",
+    webhook: getOwnUrl() + "/api/replicateWebhook",
   })
 
   await prisma.image.create({

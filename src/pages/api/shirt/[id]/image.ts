@@ -1,5 +1,5 @@
 import is from "@sindresorhus/is"
-import { getPrismaImage } from "functions/getPrismaImage"
+import { prisma } from "functions/prisma"
 import { NextApiHandler } from "next"
 
 const handler: NextApiHandler = async (req, res) => {
@@ -9,7 +9,14 @@ const handler: NextApiHandler = async (req, res) => {
     return
   }
 
-  const image = await getPrismaImage(id)
+  const image = await prisma.image.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      image: true,
+    },
+  })
 
   if (!image) {
     res.setHeader("Cache-Control", "public, no-cache")
@@ -23,14 +30,15 @@ const handler: NextApiHandler = async (req, res) => {
     return
   }
 
-  if (!image.imageData || !image.imageMimeType) {
+  if (!image.image) {
     res.setHeader("Cache-Control", "public, no-cache")
     res.status(404).json({ state: "Not found" })
     return
   }
 
-  res.setHeader("Content-Type", image.imageMimeType)
-  res.status(200).send(image.imageData)
+  res.setHeader("Cache-Control", "public, max-age=31536000, immutable")
+  res.setHeader("Content-Type", image.image.mimeType)
+  res.status(200).send(image.image.data)
 }
 
 export default handler
