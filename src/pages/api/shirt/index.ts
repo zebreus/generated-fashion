@@ -5,6 +5,8 @@ import { getOwnUrl } from "functions/getOwnUrl"
 import { getPredictionRef } from "hooks/firestore/getRefs"
 import { NextRequest } from "next/server"
 import { predict } from "replicate-api"
+// eslint-disable-next-line import/no-unassigned-import
+import "hooks/useInitialize"
 
 const replicateVersion = "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef"
 
