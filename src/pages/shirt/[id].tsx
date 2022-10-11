@@ -1,7 +1,6 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
-import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -19,12 +18,6 @@ export default function ShirtPreview() {
         padding: 0 2rem;
       `}
     >
-      <Head>
-        <title>text2shirt</title>
-        <meta name="description" content="Ai created shirts" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <main
         css={css`
           min-height: 100vh;
@@ -82,40 +75,6 @@ export default function ShirtPreview() {
           </h2>
         )}
       </main>
-
-      <footer
-        css={css`
-          display: flex;
-          flex: 1;
-          padding: 2rem 0;
-          border-top: 1px solid #eaeaea;
-          justify-content: center;
-          align-items: center;
-
-          a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-grow: 1;
-          }
-        `}
-      >
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span
-            css={css`
-              height: 1em;
-              margin-left: 0.5rem;
-            `}
-          >
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
 }
