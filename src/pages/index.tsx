@@ -1,4 +1,5 @@
 import { css } from "@emotion/react"
+import { Gallery } from "components/Gallery"
 import Head from "next/head"
 import Image from "next/image"
 import { useRouter } from "next/router"
@@ -81,6 +82,7 @@ export default function ShirtPreview() {
         >
           GENERATE NOW!!!
         </button>
+        <Gallery />
       </main>
 
       <footer

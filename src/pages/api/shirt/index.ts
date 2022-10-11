@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client"
 import is from "@sindresorhus/is"
 import { generateId } from "functions/generateId"
 import { getOwnUrl } from "functions/getOwnUrl"
+import { prisma } from "functions/prisma"
 import { NextApiHandler } from "next"
 import { predict } from "replicate-api"
 
-const prisma = new PrismaClient()
 const replicateVersion = "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef"
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introductio
@@ -42,6 +41,7 @@ const handler: NextApiHandler = async (req, res) => {
       modelVersion: prediction.version,
       seed: seed,
       replicateState: "starting",
+      date: new Date(),
     },
   })
 

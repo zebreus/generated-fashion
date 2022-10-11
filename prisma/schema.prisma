@@ -28,6 +28,7 @@ model Image {
   modelVersion   String
   image          ImageData?     @relation(fields: [imageDataId], references: [id])
   imageDataId    Int?
+  date           DateTime
 }
 
 model ImageData {
