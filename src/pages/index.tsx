@@ -51,6 +51,9 @@ export default function ShirtPreview() {
             line-height: 1.5;
             font-size: 1.5rem;
             text-align: center;
+            width: 600px;
+            max-width: 100%;
+            height: 300px;
           `}
           defaultValue="ruiner, cyber future, hello darkness, drawn, her head break, red and black color scheme, blade runner, Benedykt Szneider, modular synth, red on black"
         />
