@@ -1,7 +1,7 @@
 export type PredictionState = "starting" | "processing" | "succeeded" | "failed" | "canceled"
 
 export type Prediction = {
-  replicateId: string
+  replicateId?: string
   version: string
   state: string
   prompt: string
