@@ -1,7 +1,8 @@
 import is from "@sindresorhus/is"
+import { setDoc } from "firebase/firestore"
 import { generateId } from "functions/generateId"
 import { getOwnUrl } from "functions/getOwnUrl"
-import { prisma } from "functions/prisma"
+import { getPredictionRef } from "hooks/firestore/getRefs"
 import { NextApiHandler } from "next"
 import { predict } from "replicate-api"
 
@@ -33,16 +34,16 @@ const handler: NextApiHandler = async (req, res) => {
     webhook: getOwnUrl() + "/api/replicateWebhook",
   })
 
-  await prisma.image.create({
-    data: {
-      id: id,
-      prompt: prompt,
-      replicateId: prediction.id,
-      modelVersion: prediction.version,
-      seed: seed,
-      replicateState: "starting",
-      date: new Date(),
-    },
+  const newRef = getPredictionRef(id)
+
+  await setDoc(newRef, {
+    createdAt: Date.now(),
+    prompt: prompt,
+    seed: seed,
+    replicateId: prediction.id,
+    state: prediction.status,
+    version: prediction.version,
+    _ref: newRef,
   })
 
   res.status(200).json({ id: id })

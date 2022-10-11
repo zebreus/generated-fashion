@@ -1,6 +1,6 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
-import { useImage } from "hooks/useImage"
+import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
@@ -10,7 +10,8 @@ export default function ShirtPreview() {
   const router = useRouter()
   const id = typeof router.query["id"] === "string" ? router.query["id"] : router.query["id"]?.[0]
 
-  const url = useImage(id)
+  const prediction = usePrediction(id)
+  const url = prediction?.resultUrl
   console.log(url)
   return (
     <div
@@ -62,7 +63,6 @@ export default function ShirtPreview() {
             flex-direction: row;
           `}
         >
-          {" "}
           <CoolShirt url={url} />
           <CoolShirt url={url} />
           <CoolShirt url={url} />
