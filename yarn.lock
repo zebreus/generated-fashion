@@ -5639,10 +5639,10 @@ rc@1.2.8, rc@^1.2.8:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-3d-shirt@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/react-3d-shirt/-/react-3d-shirt-0.0.2.tgz#d0a14e778af90bfccc28817e4fcf8423edad87de"
-  integrity sha512-lA/cRaxGZjZ7MV65Ir4XiabTuAG9hAPPlWoNRBn+EdYqvDWLDJ+zidGQqkK670BXifcTdaJb7pTiut+oilmT8A==
+react-3d-shirt@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-3d-shirt/-/react-3d-shirt-0.0.3.tgz#367b90b4c6755d5d954ebe040665d5c11ff26fc1"
+  integrity sha512-XbFAV0ruMJmEaghORu2B+xVNqdnvCc6UGeoiLkNDaKsmilWBQ9N11v+c5mnJAGTKaZy6ODtIMezr9Hexvbk7lw==
   dependencies:
     "@emotion/react" "^11.10.4"
     "@react-three/drei" "^9.34.1"
