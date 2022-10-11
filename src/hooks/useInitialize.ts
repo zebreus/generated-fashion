@@ -46,7 +46,7 @@ if (!getApps().length) {
 export function useInitialize() {
   useEffect(() => {
     // @ts-expect-error: This is probably correct
-    window["ga-disable-" + secrets.firebase.measurementId] = true
+    window["ga-disable-" + process.env["NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID"]] = true
     setAnalyticsCollectionEnabled(getAnalytics(), false)
   }, [])
 }
