@@ -1,11 +1,13 @@
 import { css } from "@emotion/react"
 import { Gallery } from "components/Gallery"
+import { generateId } from "functions/generateId"
 import Head from "next/head"
 import Image from "next/image"
-import { useRouter } from "next/router"
+import Link from "next/link"
+import { useMemo } from "react"
 
 export default function ShirtPreview() {
-  const router = useRouter()
+  const newId = useMemo(() => generateId(), [])
   return (
     <div
       css={css`
@@ -50,7 +52,6 @@ export default function ShirtPreview() {
         >
           Create shirts with <a href="https://nextjs.org">stable diffusion</a> (AI!!!)
         </h1>
-
         <textarea
           id="textareaJOOO"
           css={css`
@@ -61,27 +62,23 @@ export default function ShirtPreview() {
           `}
           defaultValue="ruiner, cyber future, hello darkness, drawn, her head break, red and black color scheme, blade runner, Benedykt Szneider, modular synth, red on black"
         />
-
-        <button
-          onClick={async () => {
-            console.log("clicked")
-            const textarea = document.getElementById("textareaJOOO") as HTMLTextAreaElement
-            const content = textarea.value
-            const response = await fetch("/api/shirt", {
-              body: JSON.stringify({ prompt: content }),
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            })
-            const responseJson = await response.json()
-            const id = responseJson.id
-            if (!id) {
-              alert("Something went wrong, no id")
-            }
-            router.push("/shirt/" + id)
-          }}
-        >
-          GENERATE NOW!!!
-        </button>
+        <Link href={`/shirt/${newId}`} passHref>
+          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions  */}
+          <a
+            style={{ padding: 3, borderWidth: 2, borderRadius: 0, borderColor: "#000000", borderStyle: "solid" }}
+            onClick={async () => {
+              const textarea = document.getElementById("textareaJOOO") as HTMLTextAreaElement
+              const content = textarea.value
+              await fetch("/api/shirt", {
+                body: JSON.stringify({ prompt: content, id: newId }),
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+              })
+            }}
+          >
+            GENERATE NOW!!!
+          </a>
+        </Link>
         <Gallery />
       </main>
 

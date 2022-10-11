@@ -8,6 +8,6 @@ export function usePrediction(predictionId: string | undefined) {
 }
 
 // ts-prune-ignore-next
-export async function getPrediction(shopId: string) {
-  return await getDocument(getPredictionRef(shopId))
+export async function getPrediction(predictionId: string) {
+  return await getDocument(getPredictionRef(predictionId))
 }
