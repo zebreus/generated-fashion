@@ -13,35 +13,38 @@ const firebaseConfig: FirebaseOptions = {
   measurementId: process.env["NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID"],
 }
 
-if (!getApps().length) {
-  try {
-    initializeApp(firebaseConfig)
+export function initialize() {
+  if (!getApps().length) {
+    try {
+      initializeApp(firebaseConfig)
 
-    const firestoreSettings = { ignoreUndefinedProperties: true, experimentalForceLongPolling: true }
-    initializeFirestore(getApps()[0] as FirebaseApp, firestoreSettings)
-  } catch (error) {
-    console.error(error)
+      const firestoreSettings = { ignoreUndefinedProperties: true, experimentalForceLongPolling: true }
+      initializeFirestore(getApps()[0] as FirebaseApp, firestoreSettings)
+    } catch (error) {
+      console.error(error)
+    }
+    //   if (secrets.emulator?.host && process.env.NEXT_PUBLIC_USE_FIRESTORE_EMULATOR === "true") {
+    //     if (secrets.emulator.firestorePort) {
+    //       connectFirestoreEmulator(getFirestore(), secrets.emulator.host, secrets.emulator.firestorePort)
+    //     }
+    //     if (secrets.emulator.authPort) {
+    //       connectAuthEmulator(getAuth(), "http://" + secrets.emulator.host + ":" + secrets.emulator.authPort)
+    //     }
+    //     if (secrets.emulator.functionsPort) {
+    //       connectFunctionsEmulator(getFunctions(), secrets.emulator.host, secrets.emulator.functionsPort)
+    //       connectFunctionsEmulator(
+    //         getFunctions(getApps()[0], "europe-west1"),
+    //         secrets.emulator.host,
+    //         secrets.emulator.functionsPort
+    //       )
+    //     }
+    //     if (secrets.emulator.storagePort) {
+    //       connectStorageEmulator(getStorage(), secrets.emulator.host, secrets.emulator.storagePort)
+    //     }
+    //   }
   }
-  //   if (secrets.emulator?.host && process.env.NEXT_PUBLIC_USE_FIRESTORE_EMULATOR === "true") {
-  //     if (secrets.emulator.firestorePort) {
-  //       connectFirestoreEmulator(getFirestore(), secrets.emulator.host, secrets.emulator.firestorePort)
-  //     }
-  //     if (secrets.emulator.authPort) {
-  //       connectAuthEmulator(getAuth(), "http://" + secrets.emulator.host + ":" + secrets.emulator.authPort)
-  //     }
-  //     if (secrets.emulator.functionsPort) {
-  //       connectFunctionsEmulator(getFunctions(), secrets.emulator.host, secrets.emulator.functionsPort)
-  //       connectFunctionsEmulator(
-  //         getFunctions(getApps()[0], "europe-west1"),
-  //         secrets.emulator.host,
-  //         secrets.emulator.functionsPort
-  //       )
-  //     }
-  //     if (secrets.emulator.storagePort) {
-  //       connectStorageEmulator(getStorage(), secrets.emulator.host, secrets.emulator.storagePort)
-  //     }
-  //   }
 }
+initialize()
 
 export function useInitialize() {
   useEffect(() => {
