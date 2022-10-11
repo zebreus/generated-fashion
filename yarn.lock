@@ -8221,10 +8221,10 @@ registry-url@^5.0.0:
   dependencies:
     rc "^1.2.8"
 
-replicate-api@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/replicate-api/-/replicate-api-0.1.4.tgz#d3a5d288acb79a01f5f0ed78270b74924b210757"
-  integrity sha512-1koXgMsQ6a0jk26/bgQBdvWw+d8ss2kclLj2JY1VM962oNZ5MXEN7I8PC0iVYWu420Bsdlkb1Oz2WKSnUQCIZg==
+replicate-api@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/replicate-api/-/replicate-api-0.1.5.tgz#8e0f51a43048467efe3289b735a1048c712e55fd"
+  integrity sha512-RixINt5inRrtEYe7AxBEUKgzrXHzbm1zJZLOgnAnZXHQIk0uO6HSucpPwbd9TLyLoOtV4KZCLMy9x9fufWd2yQ==
 
 request@^2.87.0:
   version "2.88.2"
