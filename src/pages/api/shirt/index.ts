@@ -69,7 +69,7 @@ const handler = async (req: NextRequest) => {
 
   const prediction = await predict({
     version: replicateVersion,
-    input: { prompt: prompt, steps: 10, seed: seed },
+    input: { prompt: prompt, num_inference_steps: 100, seed: seed },
     token: process.env["REPLICATE_TOKEN"] || "",
     webhook: getOwnUrl() + "/api/replicateWebhook",
   })
