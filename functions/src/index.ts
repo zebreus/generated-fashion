@@ -4,25 +4,29 @@ import * as functions from "firebase-functions"
 import { request as httpRequest } from "http"
 import { request as httpsRequest } from "https"
 
-export const firestoreLevelOne = functions.firestore
-  .document("{firstCollectionId}/{firstDocumentId}")
+export const firestoreLevelOne = functions
+  .region("europe-west3")
+  .firestore.document("{firstCollectionId}/{firstDocumentId}")
   .onWrite(async (change, context) => {
     return await relayUpdate(change, context)
   })
-export const firestoreLevelTwo = functions.firestore
-  .document("{firstCollectionId}/{firstDocumentId}/{secondCollectionId}/{secondDocumentId}")
+export const firestoreLevelTwo = functions
+  .region("europe-west3")
+  .firestore.document("{firstCollectionId}/{firstDocumentId}/{secondCollectionId}/{secondDocumentId}")
   .onWrite(async (change, context) => {
     return await relayUpdate(change, context)
   })
-export const firestoreLevelThree = functions.firestore
-  .document(
+export const firestoreLevelThree = functions
+  .region("europe-west3")
+  .firestore.document(
     "{firstCollectionId}/{firstDocumentId}/{secondCollectionId}/{secondDocumentId}/{thirdCollectionId}/{thirdDocumentId}"
   )
   .onWrite(async (change, context) => {
     return await relayUpdate(change, context)
   })
-export const firestoreLevelFour = functions.firestore
-  .document(
+export const firestoreLevelFour = functions
+  .region("europe-west3")
+  .firestore.document(
     "{firstCollectionId}/{firstDocumentId}/{secondCollectionId}/{secondDocumentId}/{thirdCollectionId}/{thirdDocumentId}/{fourthCollectionId}/{fourthDocumentId}"
   )
   .onWrite(async (change, context) => {
