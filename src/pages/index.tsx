@@ -1,6 +1,8 @@
 import { css } from "@emotion/react"
 import { Gallery } from "components/Gallery"
+import { setDoc } from "firebase/firestore"
 import { generateId } from "functions/generateId"
+import { getPredictionRef } from "hooks/firestore/getRefs"
 import Link from "next/link"
 import { useMemo } from "react"
 
@@ -63,11 +65,13 @@ export default function ShirtPreview() {
             style={{ padding: 3, borderWidth: 2, borderRadius: 0, borderColor: "#000000", borderStyle: "solid" }}
             onClick={async () => {
               const textarea = document.getElementById("textareaJOOO") as HTMLTextAreaElement
-              const content = textarea.value
-              await fetch("/api/shirt", {
-                body: JSON.stringify({ prompt: content, id: newId }),
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+              const prompt = textarea.value
+              const ref = getPredictionRef(newId)
+              const seed = Math.floor(Math.random() * 100000000)
+              await setDoc(getPredictionRef(newId), {
+                prompt: prompt,
+                seed: seed,
+                _ref: ref,
               })
             }}
           >
