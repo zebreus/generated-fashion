@@ -98,7 +98,7 @@
   },
   "overrides": [
     {
-      "files": ["src/**/*.ts", "src/**/*.tsx"],
+      "files": ["**/*.ts", "**/*.tsx"],
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
@@ -118,6 +118,15 @@
         "@typescript-eslint/switch-exhaustiveness-check": "error",
         "@typescript-eslint/no-empty-function": "off"
       },
+      "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "project": "./tsconfig.dev.json"
+      }
+    },
+    {
+      "files": ["src/**/*.ts", "src/**/*.tsx"],
       "parserOptions": {
         "parser": "@typescript-eslint/parser",
         "ecmaVersion": 2018,

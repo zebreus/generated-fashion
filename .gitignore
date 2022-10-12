@@ -25,6 +25,7 @@ next-env.d.ts
 /build
 .env*.local
 /.env
-# postgres
-/.pgadmin
-/.local-data
+# firebase functions
+/functions/lib
+/functions/node_modules
+/functions/.env

@@ -1,6 +1,8 @@
 import { getAnalytics, setAnalyticsCollectionEnabled } from "firebase/analytics"
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app"
-import { initializeFirestore } from "firebase/firestore"
+import { connectFirestoreEmulator, getFirestore, initializeFirestore } from "firebase/firestore"
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions"
+import { connectStorageEmulator, getStorage } from "firebase/storage"
 import { useEffect } from "react"
 
 const firebaseConfig: FirebaseOptions = {
@@ -23,25 +25,11 @@ export function initialize() {
     } catch (error) {
       console.error(error)
     }
-    //   if (secrets.emulator?.host && process.env.NEXT_PUBLIC_USE_FIRESTORE_EMULATOR === "true") {
-    //     if (secrets.emulator.firestorePort) {
-    //       connectFirestoreEmulator(getFirestore(), secrets.emulator.host, secrets.emulator.firestorePort)
-    //     }
-    //     if (secrets.emulator.authPort) {
-    //       connectAuthEmulator(getAuth(), "http://" + secrets.emulator.host + ":" + secrets.emulator.authPort)
-    //     }
-    //     if (secrets.emulator.functionsPort) {
-    //       connectFunctionsEmulator(getFunctions(), secrets.emulator.host, secrets.emulator.functionsPort)
-    //       connectFunctionsEmulator(
-    //         getFunctions(getApps()[0], "europe-west1"),
-    //         secrets.emulator.host,
-    //         secrets.emulator.functionsPort
-    //       )
-    //     }
-    //     if (secrets.emulator.storagePort) {
-    //       connectStorageEmulator(getStorage(), secrets.emulator.host, secrets.emulator.storagePort)
-    //     }
-    //   }
+    if (process.env["NEXT_PUBLIC_USE_FIREBASE_EMULATOR"] === "true") {
+      connectFirestoreEmulator(getFirestore(), "localhost", 8080)
+      connectFunctionsEmulator(getFunctions(), "localhost", 5001)
+      connectStorageEmulator(getStorage(), "localhost", 9199)
+    }
   }
 }
 initialize()

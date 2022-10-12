@@ -1,5 +1,10 @@
 {
-  "*.+(ts|tsx)": ["prettier --write", "eslint --cache --fix", "tsc-files --noEmit"],
+  "functions/**/*.+(ts|tsx)": [
+    "prettier --write",
+    "eslint --cache --fix",
+    "tsc-files -p functions/tsconfig.json --noEmit"
+  ],
+  "(!function)*.+(ts|tsx)": ["prettier --write", "eslint --cache --fix", "tsc-files --noEmit"],
   "*.+(js|jsx)": ["prettier --write", "eslint --cache --fix"],
   "*.+(json|css|md|yml|yaml|scss)": ["prettier --write"]
 }

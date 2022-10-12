@@ -13,26 +13,10 @@
 
       shell = { pkgs }:
         pkgs.mkShell {
-          buildInputs = ([ pkgs.nodejs pkgs.yarn ]
-            ++ (if pkgs.stdenv.isDarwin then
-              [ ]
-            else [
-              pkgs.docker
-              pkgs.docker-compose
-              pkgs.prisma-engines
-            ]));
+          buildInputs = [ pkgs.nodejs pkgs.yarn pkgs.adoptopenjdk-bin];
           shellHook = ''
             export PATH="$(pwd)/node_modules/.bin:$PATH"
-          '' + (if pkgs.stdenv.isDarwin then ''
-            # only on mac
-          '' else ''
-            # only on linux
-            export PRISMA_MIGRATION_ENGINE_BINARY="${pkgs.prisma-engines}/bin/migration-engine"
-            export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines}/bin/query-engine"
-            export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines}/lib/libquery_engine.node"
-            export PRISMA_INTROSPECTION_ENGINE_BINARY="${pkgs.prisma-engines}/bin/introspection-engine"
-            export PRISMA_FMT_BINARY="${pkgs.prisma-engines}/bin/prisma-fmt"
-          '');
+          '';
         };
 
     };

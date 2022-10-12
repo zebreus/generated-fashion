@@ -1,11 +1,13 @@
 import { updateDoc, where } from "firebase/firestore"
 import { getQuery } from "hooks/firestore/core/useQuery"
 import { getPredictionsRef } from "hooks/firestore/getRefs"
+import { initialize } from "hooks/useInitialize"
 import { NextApiHandler } from "next"
 import { processWebhook } from "replicate-api"
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introductio
 const handler: NextApiHandler = async (req, res) => {
+  initialize()
   const body = req.body
   const prediction = processWebhook({
     token: process.env["REPLICATE_TOKEN"] || "",

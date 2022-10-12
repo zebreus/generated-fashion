@@ -4,65 +4,83 @@ import { getOwnUrl } from "functions/getOwnUrl"
 import { getPredictionRef } from "hooks/firestore/getRefs"
 import { getPrediction } from "hooks/firestore/simple/usePrediction"
 import { initialize } from "hooks/useInitialize"
-import { NextRequest } from "next/server"
+import { NextApiHandler } from "next"
 import { predict } from "replicate-api"
 
 const replicateVersion = "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef"
 
 // Next.js API route support: https://nextjs.org/docs/api-routes/introductio
-const handler = async (req: NextRequest) => {
+const handler: NextApiHandler = async (req, res) => {
   initialize()
-  const { prompt, id } = await req.json()
+  const { prompt, id } = await req.body
   if (!is.string(prompt)) {
-    return new Response(JSON.stringify({ detail: "a string prompt is required" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    res.setHeader("Content-Type", "application/json")
+    res.status(400).json({ detail: "prompt is not a string" })
+    return
+    // return new Response(JSON.stringify({ detail: "a string prompt is required" }), {
+    //   status: 400,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
   }
   if (prompt.length < 3) {
-    return new Response(JSON.stringify({ detail: "prompt is too short" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    res.setHeader("Content-Type", "application/json")
+    res.status(400).json({ detail: "error" })
+    return
+    // return new Response(JSON.stringify({ detail: "prompt is too short" }), {
+    //   status: 400,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
   }
   if (prompt.length > 2000) {
-    return new Response(JSON.stringify({ detail: "prompt is too long" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    res.setHeader("Content-Type", "application/json")
+    res.status(400).json({ detail: "error" })
+    return
+    // return new Response(JSON.stringify({ detail: "prompt is too long" }), {
+    //   status: 400,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
   }
   if (!is.string(id)) {
-    return new Response(JSON.stringify({ detail: "a id is required" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    res.setHeader("Content-Type", "application/json")
+    res.status(400).json({ detail: "error" })
+    return
+    // return new Response(JSON.stringify({ detail: "a id is required" }), {
+    //   status: 400,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
   }
   if (id.length !== 10) {
-    return new Response(JSON.stringify({ detail: "the id needs to be 10 characters" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    res.setHeader("Content-Type", "application/json")
+    res.status(400).json({ detail: "error" })
+    return
+    // return new Response(JSON.stringify({ detail: "the id needs to be 10 characters" }), {
+    //   status: 400,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
   }
 
   const object = await getPrediction(id)
 
   if (object) {
-    return new Response(JSON.stringify({ detail: "can only generate new documents" }), {
-      status: 400,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    res.setHeader("Content-Type", "application/json")
+    res.status(400).json({ detail: "error" })
+    return
+    // return new Response(JSON.stringify({ detail: "can only generate new documents" }), {
+    //   status: 400,
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // })
   }
 
   const seed = Math.floor(Math.random() * 100000000)
@@ -86,16 +104,18 @@ const handler = async (req: NextRequest) => {
     _ref: newRef,
   })
 
-  return new Response(JSON.stringify({ id: id }), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
+  res.setHeader("Content-Type", "application/json")
+  res.status(200).json({ id })
+  // return new Response(JSON.stringify({ id: id }), {
+  //   status: 200,
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  // })
 }
 
 export default handler
 
-export const config = {
-  runtime: "experimental-edge",
-}
+// export const config = {
+//   runtime: "nodejs",
+// }

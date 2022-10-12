@@ -24,3 +24,8 @@ next-env.d.ts
 /out
 /build
 .env*.local
+/.env
+# firebase functions
+/functions/lib
+/functions/node_modules
+/functions/.env
