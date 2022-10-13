@@ -1,4 +1,3 @@
-import { css } from "@emotion/react"
 import { useEffect, useState } from "react"
 import { Shirt } from "react-3d-shirt"
 
@@ -12,14 +11,5 @@ export const CoolShirt = ({ url }: CoolShirtProps) => {
     setClientside(true)
   }, [])
   url
-  return (
-    <div
-      css={css`
-        width: 400px;
-        height: 500px;
-      `}
-    >
-      {clientside ? <Shirt motif={url} color="white" /> : null}
-    </div>
-  )
+  return <>{clientside ? <Shirt motif={url} color="white" /> : null}</>
 }
