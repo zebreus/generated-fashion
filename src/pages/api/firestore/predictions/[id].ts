@@ -1,8 +1,8 @@
-import { updateDoc } from "firebase/firestore"
+import { DocumentReference, updateDoc } from "firebase/firestore"
 import { getOwnUrl } from "functions/getOwnUrl"
 import { getPredictionRef } from "hooks/firestore/getRefs"
 import { NextApiHandler } from "next"
-import { predict } from "replicate-api"
+import { pollPrediction, predict } from "replicate-api"
 import { Prediction } from "types/firestore/prediction"
 
 type BeforeAndAfter =
@@ -79,10 +79,24 @@ const handler: NextApiHandler = async (req, res) => {
     version: replicateVersion,
   })
 
-  console.log("Firestore handler")
-  console.log("body:", req.body)
+  if (process.env["NEXT_PUBLIC_USE_FIREBASE_EMULATOR"] === "true") {
+    await waitForResult(prediction.id, ref)
+  }
+
   res.status(200).json({ state: "success" })
   return
+}
+
+const waitForResult = async (replicateId: string, ref: DocumentReference<Prediction>) => {
+  const prediction = await pollPrediction({
+    id: replicateId,
+    token: process.env["REPLICATE_TOKEN"] || "",
+  })
+
+  await updateDoc(ref, {
+    state: prediction.status,
+    resultUrl: typeof prediction.output?.[0] === "string" ? prediction.output?.[0] : undefined,
+  })
 }
 
 export default handler
