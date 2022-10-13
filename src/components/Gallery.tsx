@@ -7,8 +7,12 @@ import { useEffect, useState } from "react"
 export const Gallery = () => {
   const predictions = useLatestPredictions()
   const [ref, setRef] = useState<HTMLDivElement | null>(null)
-  const [nextElement, setNextElement] = useState<string>()
-  const [prevElement, setPrevElement] = useState<string>()
+  const [nextElement, setNextElement] = useState<string | undefined>(
+    predictions?.[0] ? "shirt-" + predictions?.[Math.min(3, predictions.length - 1)]._ref.id : undefined
+  )
+  const [prevElement, setPrevElement] = useState<string | undefined>(
+    predictions?.[0] ? "shirt-" + predictions?.[0]._ref.id : undefined
+  )
 
   useEffect(() => {
     if (!ref) {
@@ -65,6 +69,7 @@ export const Gallery = () => {
   return (
     <>
       <div className="relative w-full">
+        <div className="divider uppercase text-xl">Recent designs</div>
         <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
           {predictions?.map(shirt => (
             <Link key={shirt._ref.id} href={`/shirt/${shirt._ref.id}`} passHref>
@@ -73,8 +78,10 @@ export const Gallery = () => {
                 className="carousel-item flex flex-col text-center items-center max-w-xs min-w-xs"
                 id={"shirt-" + shirt._ref.id}
               >
-                <h2 className="card-title h-20">
-                  {shirt.prompt.length > 88 ? shirt.prompt.slice(0, 85) + "..." : shirt.prompt}
+                <h2 className="items-center text-xl flex h-20 mx-5">
+                  {(shirt.prompt.length > 88 ? shirt.prompt.slice(0, 85) + "..." : shirt.prompt).replace(/^./, v =>
+                    v.toUpperCase()
+                  )}
                 </h2>
                 <div
                   className="w-72 h-96"
