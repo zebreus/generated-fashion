@@ -2,38 +2,113 @@ import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
 import { useLatestPredictions } from "hooks/firestore/simple/useLatestPredictions"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export const Gallery = () => {
   const predictions = useLatestPredictions()
+  const [ref, setRef] = useState<HTMLDivElement | null>(null)
+  const [nextElement, setNextElement] = useState<string>()
+  const [prevElement, setPrevElement] = useState<string>()
+
+  useEffect(() => {
+    if (!ref) {
+      setNextElement(undefined)
+      setPrevElement(undefined)
+      return
+    }
+
+    const getElements = () => {
+      if (!ref) return undefined
+      const children = [...ref.children]
+      const rectsWithIds = children.map(child => {
+        const rect = child.getBoundingClientRect()
+        return { id: child.id, rect }
+      })
+      const carouselRect = ref.getBoundingClientRect()
+      // Find the closest element to the left that is mostly offscreen
+      const previous = rectsWithIds.reduce(
+        (acc, child) => {
+          const currCenter = child.rect.width / 2 + child.rect.left
+          const currDiff = carouselRect.left - currCenter
+          if (currDiff < 0 || currDiff > acc.diff) {
+            return acc
+          }
+          return { diff: currDiff, id: child.id }
+        },
+        { id: undefined, diff: Infinity } as { id: string | undefined; diff: number }
+      )
+      // Find the closest element to the right that is mostly offscreen
+      const next = rectsWithIds.reduce(
+        (acc, child) => {
+          const currCenter = child.rect.width / 2 + child.rect.left
+          const currDiff = currCenter - carouselRect.right
+          if (currDiff < 0 || currDiff > acc.diff) {
+            return acc
+          }
+          return { diff: currDiff, id: child.id }
+        },
+        { id: undefined, diff: Infinity } as { id: string | undefined; diff: number }
+      )
+
+      return { previous: previous?.id, next: next?.id }
+    }
+
+    const interval = setInterval(() => {
+      const { previous, next } = getElements() || {}
+
+      setNextElement(next)
+      setPrevElement(previous)
+    }, 200)
+    return () => clearInterval(interval)
+  }, [ref])
+
   return (
-    <div className="carousel carousel-center w-full p-4 space-x-4 bg-transparent">
-      {predictions?.map(shirt => (
-        <Link key={shirt._ref.id} href={`/shirt/${shirt._ref.id}`} passHref>
-          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-          <a className="carousel-item card-body max-w-xs">
-            <h2 className="card-title">
-              {shirt.prompt.length > 123 ? shirt.prompt.slice(0, 120) + "..." : shirt.prompt}
-            </h2>
-            <div
-              css={css`
-                width: 100%;
-                height: 25rem;
-                margin-top: auto;
-              `}
-            >
-              <CoolShirt url={shirt.resultUrl} />
-            </div>
+    <>
+      <div className="relative w-full">
+        <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
+          {predictions?.map(shirt => (
+            <Link key={shirt._ref.id} href={`/shirt/${shirt._ref.id}`} passHref>
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="carousel-item flex flex-col text-center items-center max-w-xs min-w-xs"
+                id={"shirt-" + shirt._ref.id}
+              >
+                <h2 className="card-title h-20">
+                  {shirt.prompt.length > 88 ? shirt.prompt.slice(0, 85) + "..." : shirt.prompt}
+                </h2>
+                <div
+                  className="w-72 h-96"
+                  css={css`
+                    margin-top: -2rem;
+                  `}
+                >
+                  <CoolShirt url={shirt.resultUrl} />
+                </div>
+              </a>
+            </Link>
+          ))}
+        </div>
+        <div className="absolute flex justify-between w-full h-full items-center inset-0 pointer-events-none touch-none">
+          <a
+            href={`#${prevElement ?? ref?.firstElementChild?.id}`}
+            className={`btn btn-primary btn-circle m-6 pointer-events-auto touch-auto ${
+              !prevElement && "btn-disabled"
+            }`}
+            aria-disabled={!prevElement}
+          >
+            ❮
           </a>
-        </Link>
-      ))}
-      <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-        <a href="#slide4" className="btn btn-circle">
-          ❮
-        </a>
-        <a href="#slide2" className="btn btn-circle">
-          ❯
-        </a>
+          <a
+            href={`#${nextElement ?? ref?.lastElementChild?.id}`}
+            className={`btn btn-primary btn-circle m-6 pointer-events-auto touch-auto ${
+              !nextElement && "btn-disabled"
+            }`}
+            aria-disabled={!nextElement}
+          >
+            ❯
+          </a>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
