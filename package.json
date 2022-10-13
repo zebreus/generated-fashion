@@ -60,7 +60,7 @@
     "postgres:stop": "docker-compose down",
     "getEnv": "vercel env pull .env",
     "deploy:functions": "if test -z \"$FIRESTORE_RELAY_SHARED_SECRET\"; then echo \"FIRESTORE_RELAY_SHARED_SECRET is not set\"; exit 1; fi ; echo \"FIRESTORE_RELAY_SHARED_SECRET=$FIRESTORE_RELAY_SHARED_SECRET\" > functions/.env ; firebase deploy --only functions",
-    "emulators": "firebase emulators:start --only firestore,functions,storage"
+    "emulators": "yarn --cwd functions build ; firebase emulators:start --only firestore,functions,storage"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
