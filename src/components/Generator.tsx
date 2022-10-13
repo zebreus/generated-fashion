@@ -1,3 +1,4 @@
+import { css } from "@emotion/react"
 import { setDoc } from "firebase/firestore"
 import { generateId } from "functions/generateId"
 import { getPredictionRef } from "hooks/firestore/getRefs"
@@ -36,20 +37,32 @@ export const Generator = () => {
   return (
     <div className="flex flex-col my-20 justify-center items-center space-y-3 w-full">
       <h1 className="text-3xl font-bold">describe your shirt.</h1>
-      <textarea
-        cols={4}
-        placeholder={typedText}
-        className={`input input-bordered input-primary mx-4  text-3xl min-h-8 transition-all ${
-          focus ? "min-h-[8rem] min-w-[90%]" : "min-w-[40rem]"
-        }`}
-        onChange={v => setValue(v.target.value)}
+      <span
+        role="textbox"
+        contentEditable
+        data-placeholder={typedText}
+        className={`input input-bordered input-primary mx-4 text-3xl h-auto transition-all resize`}
+        css={css`
+          min-width: ${focus ? "90%" : "min(90%, 40rem)"};
+          max-width: ${focus ? "90%" : "min(90%, 40rem)"};
+          min-height: 7.3rem;
+          @media (min-width: 400px) {
+            min-height: 5.5rem;
+          }
+          @media (min-width: 640px) {
+            min-height: 2.7rem;
+          }
+          :empty::after {
+            content: attr(data-placeholder);
+            display: inline-block;
+            color: #00000070;
+          }
+        `}
+        onInput={v => setValue(v.currentTarget.textContent || "")}
         onFocus={() => setFocus(true)}
-        onBlur={() => setFocus(false)}
-      >
-        {value}
-      </textarea>
+      ></span>
       <button
-        className="btn btn-primary"
+        className="btn btn-outline btn-primary bg-white text-xl font-normal lowercase pb-1"
         onClick={async () => {
           const newId = generateId()
           const prompt = value
@@ -60,10 +73,11 @@ export const Generator = () => {
             seed: seed,
             _ref: ref,
           })
+          console.log({ prompt })
           router.push(`/shirt/${newId}`)
         }}
       >
-        GENERATE NOW!!!
+        generate.
       </button>
     </div>
   )
