@@ -15,14 +15,7 @@ const useTextAnimation = () => {
     return () => clearInterval(interval)
   })
 
-  const texts = [
-    "",
-    "terror scarecrow, donato giancola style",
-    "Cute fluffy cat, soft light",
-    "A cool bird",
-    "A cool fish",
-    "A red cat",
-  ]
+  const texts = ["", "A cool bird", "Cute fluffy cat, soft light", "A cool bird", "A cool fish", "A red cat"]
   const text = texts[state]
   return text
 }
@@ -55,14 +48,14 @@ export const Generator = () => {
           :empty::after {
             content: attr(data-placeholder);
             display: inline-block;
-            color: #00000070;
+            color: hsla(var(--bc) / 0.5);
           }
         `}
         onInput={v => setValue(v.currentTarget.textContent || "")}
         onFocus={() => setFocus(true)}
       ></span>
       <button
-        className="btn btn-outline btn-primary bg-white text-xl font-normal lowercase pb-1"
+        className="btn btn-primary text-xl font-normal lowercase pb-1"
         onClick={async () => {
           const newId = generateId()
           const prompt = value
@@ -76,6 +69,7 @@ export const Generator = () => {
           console.log({ prompt })
           router.push(`/shirt/${newId}`)
         }}
+        disabled={!value}
       >
         generate.
       </button>
