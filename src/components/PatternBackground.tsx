@@ -36,6 +36,15 @@ export const PatternBackground: FunctionComponent<PatternBackgroundProps> = ({ l
                 ),
                 radial-gradient(#000000 1px, transparent 1px), radial-gradient(#000000 1px, #ffffff 1px);
               background-blend-mode: lighten, normal;
+              @media (prefers-color-scheme: dark) {
+                background-image: radial-gradient(
+                    circle 30vh at ${mousePos[0]}px ${mousePos[1]}px,
+                    rgba(63, 94, 251, 0) 0%,
+                    rgba(0, 0, 0, 0.8) 100%
+                  ),
+                  radial-gradient(#888888 1px, transparent 1px), radial-gradient(#888888 1px, #0d0d0d 1px);
+                background-blend-mode: normal;
+              }
             `}
       `}
       onTouchMove={e =>
