@@ -32,6 +32,7 @@ export const Generator = () => {
       <h1 className="text-3xl font-bold">describe your shirt.</h1>
       <span
         role="textbox"
+        aria-label="prompt input"
         contentEditable
         data-placeholder={typedText}
         className={`input input-bordered input-primary mx-4 text-3xl h-auto transition-all resize`}
