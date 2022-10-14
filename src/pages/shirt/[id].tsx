@@ -1,11 +1,10 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
-import Image from "next/image"
-import Link from "next/link"
+import { getMainLayout } from "layouts/MainLayout"
 import { useRouter } from "next/router"
 
-export default function ShirtPreview() {
+const ShirtPage = () => {
   const router = useRouter()
   const id = typeof router.query["id"] === "string" ? router.query["id"] : router.query["id"]?.[0]
 
@@ -13,68 +12,48 @@ export default function ShirtPreview() {
   const url = prediction?.resultUrl
   console.log(url)
   return (
-    <div
-      css={css`
-        padding: 0 2rem;
-      `}
-    >
-      <main
-        css={css`
-          min-height: 100vh;
-          padding: 4rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        `}
-      >
-        <h1
-          css={css`
-            a {
-              color: #0070f3;
-              text-decoration: none;
-            }
-
-            a:hover,
-            a:focus,
-            a:active {
-              text-decoration: underline;
-            }
-
-            margin: 0;
-            line-height: 1.15;
-            font-size: 4rem;
-            text-align: center;
-          `}
-        >
-          SHIRT! SHIRT! SHIRT! <Link href="/">ANOTHER ONE!</Link> (AI!!!)
-        </h1>
-        <div
-          css={css`
-            display: flex;
-            flex-direction: row;
-          `}
-        >
-          <CoolShirt url={url} />
-          <CoolShirt url={url} />
-          <CoolShirt url={url} />
-        </div>
-
-        {url ? (
-          <Image src={url} alt="shirt" width={400} height={400} />
-        ) : (
-          <h2
+    <>
+      <section className="flex-grow flex flex-col items-center justify-between w-full">
+        <div className="relative w-full min-h-[80vh] flex-grow max-h-full -mt-4">
+          <div
             css={css`
-              width: 400px;
-              height: 400px;
-              color: red;
+              position: absolute;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              top: 0;
+              margin-top: -2rem;
+              margin-bottom: -2rem;
             `}
           >
-            Generating shirt...
-          </h2>
-        )}
-      </main>
-    </div>
+            <CoolShirt url={url} />
+          </div>
+        </div>
+        {/* <h3 className="divider">prompt</h3> */}
+        <h3 className="text-xl m-4 text-center z-10">{prediction?.prompt}</h3>
+        <button
+          onClick={async () => {
+            const shareData = {
+              title: "generated shirt ",
+              text: `Look at my shirt with a picture of ${prediction?.prompt}`,
+              url: window.location.href,
+            }
+
+            try {
+              await navigator.share(shareData)
+            } catch (err) {
+              alert(`Error: ${err}`)
+            }
+          }}
+          className="btn btn-primary"
+        >
+          SHARE?
+        </button>
+      </section>
+    </>
   )
 }
+
+ShirtPage.getLayout = getMainLayout
+
+export default ShirtPage
