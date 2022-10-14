@@ -68,8 +68,8 @@ export const Gallery = () => {
 
   return (
     <>
-      <div className="relative w-full">
-        <div className="divider uppercase text-xl">Recent designs</div>
+      <section className="relative w-full">
+        <h2 className="divider uppercase text-xl">Recent designs</h2>
         <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
           {predictions?.map(shirt => (
             <Link key={shirt._ref.id} href={`/shirt/${shirt._ref.id}`} passHref>
@@ -78,11 +78,11 @@ export const Gallery = () => {
                 className="carousel-item flex flex-col text-center items-center max-w-xs min-w-xs"
                 id={"shirt-" + shirt._ref.id}
               >
-                <h2 className="items-center text-xl flex h-20 mx-5">
+                <h3 className="items-center text-xl flex h-20 mx-5">
                   {(shirt.prompt.length > 88 ? shirt.prompt.slice(0, 85) + "..." : shirt.prompt).replace(/^./, v =>
                     v.toUpperCase()
                   )}
-                </h2>
+                </h3>
                 <div
                   className="w-72 h-96"
                   css={css`
@@ -115,7 +115,7 @@ export const Gallery = () => {
             ❯
           </a>
         </div>
-      </div>
+      </section>
     </>
   )
 }

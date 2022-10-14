@@ -28,8 +28,8 @@ export const Generator = () => {
   const [focus, setFocus] = useState(false)
 
   return (
-    <div className="flex flex-col my-20 justify-center items-center space-y-3 w-full">
-      <h1 className="text-3xl font-bold">describe your shirt.</h1>
+    <section className="flex flex-col my-20 justify-center items-center space-y-3 w-full">
+      <h2 className="text-3xl font-bold">describe your shirt.</h2>
       <span
         role="textbox"
         aria-label="prompt input"
@@ -74,6 +74,6 @@ export const Generator = () => {
       >
         generate.
       </button>
-    </div>
+    </section>
   )
 }
