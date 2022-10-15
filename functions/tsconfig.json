@@ -16,6 +16,7 @@
     "noUncheckedIndexedAccess": false,
     "noImplicitReturns": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "incremental": true,
     "allowJs": false
   },

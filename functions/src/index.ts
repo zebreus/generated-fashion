@@ -1,8 +1,88 @@
 // eslint-disable-next-line import/no-namespace
+import chrome from "chrome-aws-lambda"
+// eslint-disable-next-line import/no-namespace
 import * as functions from "firebase-functions"
+import { existsSync } from "fs"
 
 import { request as httpRequest } from "http"
 import { request as httpsRequest } from "https"
+
+import puppeteer = require("puppeteer-core")
+
+const getChromeExecutable = async () => {
+  const isEmulator = process.env["FUNCTIONS_EMULATOR"] === "true"
+  if (!isEmulator) {
+    return await chrome.executablePath
+  }
+  const normal =
+    process.platform === "win32"
+      ? "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+      : process.platform === "linux"
+      ? "/run/current-system/sw/bin/google-chrome-stable"
+      : "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  if (existsSync(normal)) {
+    return normal
+  }
+  const nixos = "/run/current-system/sw/bin/google-chrome-stable"
+  if (existsSync(nixos)) {
+    return nixos
+  }
+  throw new Error("Failed to find chrome executable")
+}
+
+export const createScreenshot = functions
+  .region("europe-west3")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "2GB",
+  })
+  .https.onRequest(async (req, res) => {
+    const authHeader = req.headers.authorization
+    if (!authHeader || authHeader !== "Bearer " + process.env["FIRESTORE_RELAY_SHARED_SECRET"]) {
+      res.status(401).send("Unauthorized")
+    }
+
+    const {
+      width: widthQuery,
+      height: heightQuery,
+      path: pathQuery,
+    } = req.query as { width: string; height: string; path: string }
+    if (!widthQuery || !heightQuery || !pathQuery) {
+      res.status(400).send("Bad request. Missing width, height, or path query parameters.")
+      return
+    }
+
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-web-security"],
+      executablePath: await getChromeExecutable(),
+      headless: true,
+      ignoreHTTPSErrors: true,
+    })
+
+    const hostDetails = getHostDetails()
+    const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/${pathQuery}`
+
+    const width = parseInt(widthQuery)
+    const height = parseInt(heightQuery)
+
+    try {
+      const page = await browser.newPage()
+      await page.setViewport({ width, height })
+      console.log("Visiting ", url)
+      await page.goto(url, { waitUntil: "load", timeout: 3000 })
+      await page.addStyleTag({ content: "nextjs-portal{display: none;}" })
+      await page.waitForTimeout(5000)
+      const result = await page.screenshot({ type: "webp" })
+
+      res.header("Content-Type", "image/webp")
+      res.type("image/webp").send(result)
+    } catch (e) {
+      res.status(500).send(JSON.stringify(e))
+      console.error(e)
+    }
+
+    await browser.close()
+  })
 
 export const firestoreLevelOne = functions
   .region("europe-west3")
@@ -73,12 +153,14 @@ const getHostDetails = () => {
       request: httpRequest,
       host: "localhost",
       port: "3000",
+      proto: "http",
     }
   }
   return {
     request: httpsRequest,
     host: "generated.fashion",
     port: "443",
+    proto: "https",
   }
 }
 
