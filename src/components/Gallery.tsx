@@ -89,7 +89,7 @@ export const Gallery = () => {
                     margin-top: -2rem;
                   `}
                 >
-                  <CoolShirt url={shirt.resultUrl} />
+                  <CoolShirt url={shirt.resultUrl} fallback={shirt?.previewImageUrl} />
                 </div>
               </a>
             </Link>

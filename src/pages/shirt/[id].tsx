@@ -26,7 +26,7 @@ const ShirtPage = () => {
               margin-bottom: -2rem;
             `}
           >
-            <CoolShirt url={url} />
+            <CoolShirt url={url} fallback={prediction?.previewImageUrl} />
           </div>
         </div>
         {/* <h3 className="divider">prompt</h3> */}

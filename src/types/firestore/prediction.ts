@@ -8,6 +8,7 @@ type PredictionRequest = {
   seed: number
   resultUrl?: undefined
   createdAt?: undefined
+  previewImageUrl?: undefined
 }
 
 export type Prediction =

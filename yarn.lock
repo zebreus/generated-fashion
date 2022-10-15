@@ -8210,10 +8210,10 @@ re2@^1.17.7:
     nan "^2.16.0"
     node-gyp "^9.0.0"
 
-react-3d-shirt@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/react-3d-shirt/-/react-3d-shirt-0.0.4.tgz#15f74b2b1e34958d962261777a9bfc336e90c969"
-  integrity sha512-Dmjg65fDyQyGgHk9SVGu/e+leAQODI1SOcd7FoQClUMj3whPEFIcNKUP+3XfcS+qrU9YCWpFkVO+iauiEu4gxg==
+react-3d-shirt@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/react-3d-shirt/-/react-3d-shirt-0.0.5.tgz#5a49e2685bd2f38fb088072fc06c8ac08229a123"
+  integrity sha512-f9Am83Lx47ZWzvh9ldz9EaU0NbfRL/sp32Q9Y7KjU90U3RWzL7bCCmnfDXYF7VbenZ+HHteQzFu8+P+3plppgw==
   dependencies:
     "@emotion/react" "^11.10.4"
     "@react-three/drei" "^9.34.1"
