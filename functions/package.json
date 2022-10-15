@@ -11,10 +11,10 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "chrome-aws-lambda": "^10.1.0",
+    "@sparticuz/chromium": "107",
     "firebase-admin": "^11.1.0",
     "firebase-functions": "^4.0.0-rc.0",
-    "puppeteer-core": "^10.1.0"
+    "puppeteer-core": "^18.1.0"
   },
   "devDependencies": {
     "@firebase/app-types": "^0.8.0",

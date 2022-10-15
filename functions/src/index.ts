@@ -1,4 +1,4 @@
-import chrome from "chrome-aws-lambda"
+import chrome from "@sparticuz/chromium"
 import admin from "firebase-admin"
 // eslint-disable-next-line import/no-namespace
 import * as functions from "firebase-functions"
@@ -51,8 +51,8 @@ const takeScreenshot = async (url: string, height: number, width: number) => {
     background-color: transparent !important;
   }`,
   })
-  await page.waitForTimeout(5000)
-  const result = await page.screenshot({ type: "webp", omitBackground: true })
+  await new Promise(r => setTimeout(r, 5000))
+  const result = await page.screenshot({ type: "webp", omitBackground: true, fullPage: true })
   await browser.close()
 
   return result
@@ -109,7 +109,9 @@ export const createShirtScreenshot = functions
 
         const storage = admin.storage().bucket()
         const storageFile = storage.file(`images/${shirtIdQuery}.webp`)
-        await storageFile.save(screenshot, {})
+        await storageFile.save(screenshot, {
+          contentType: "image/webp",
+        })
         await storageFile.makePublic()
         const [metadata] = await storageFile.getMetadata()
         const previewImageUrl = metadata.mediaLink
@@ -136,6 +138,7 @@ export const createScreenshot = functions
     const authHeader = req.headers.authorization
     if (!authHeader || authHeader !== "Bearer " + process.env["FIRESTORE_RELAY_SHARED_SECRET"]) {
       res.status(401).send("Unauthorized")
+      return
     }
 
     const {
