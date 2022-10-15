@@ -114,7 +114,7 @@ export const createShirtScreenshot = functions
         })
         await storageFile.makePublic()
         const [metadata] = await storageFile.getMetadata()
-        const previewImageUrl = metadata.mediaLink
+        const previewImageUrl = metadata.publicUrl().replace("%2F", "/")
         console.log("Generated preview image url", previewImageUrl)
         await predictionRef.update({ previewImageUrl })
         return { status: "OK", url: previewImageUrl }
