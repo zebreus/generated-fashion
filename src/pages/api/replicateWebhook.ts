@@ -1,4 +1,5 @@
 import { updateDoc, where } from "firebase/firestore"
+import { updateScreenshot } from "functions/updateScreenshot"
 import { getQuery } from "hooks/firestore/core/useQuery"
 import { getPredictionsRef } from "hooks/firestore/getRefs"
 import { initialize } from "hooks/useInitialize"
@@ -33,7 +34,7 @@ const handler: NextApiHandler = async (req, res) => {
     resultUrl: typeof prediction.output?.[0] === "string" ? prediction.output?.[0] : undefined,
   })
 
-  res.status(200).json({ state: "success" })
+  await updateScreenshot(matchingPrediction._ref.id)
 }
 
 export default handler

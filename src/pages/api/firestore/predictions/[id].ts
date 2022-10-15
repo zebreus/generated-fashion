@@ -1,5 +1,6 @@
 import { DocumentReference, updateDoc } from "firebase/firestore"
 import { getOwnUrl } from "functions/getOwnUrl"
+import { updateScreenshot } from "functions/updateScreenshot"
 import { getPredictionRef } from "hooks/firestore/getRefs"
 import { NextApiHandler } from "next"
 import { pollPrediction, predict } from "replicate-api"
@@ -97,6 +98,8 @@ const waitForResult = async (replicateId: string, ref: DocumentReference<Predict
     state: prediction.status,
     resultUrl: typeof prediction.output?.[0] === "string" ? prediction.output?.[0] : undefined,
   })
+
+  await updateScreenshot(ref.id)
 }
 
 export default handler

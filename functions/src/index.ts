@@ -1,5 +1,5 @@
-// eslint-disable-next-line import/no-namespace
 import chrome from "chrome-aws-lambda"
+import admin from "firebase-admin"
 // eslint-disable-next-line import/no-namespace
 import * as functions from "firebase-functions"
 import { existsSync } from "fs"
@@ -8,6 +8,8 @@ import { request as httpRequest } from "http"
 import { request as httpsRequest } from "https"
 
 import puppeteer = require("puppeteer-core")
+
+admin.initializeApp()
 
 const getChromeExecutable = async () => {
   const isEmulator = process.env["FUNCTIONS_EMULATOR"] === "true"
@@ -29,6 +31,100 @@ const getChromeExecutable = async () => {
   }
   throw new Error("Failed to find chrome executable")
 }
+
+const takeScreenshot = async (url: string, height: number, width: number) => {
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-web-security"],
+    executablePath: await getChromeExecutable(),
+    headless: true,
+    ignoreHTTPSErrors: true,
+  })
+
+  const page = await browser.newPage()
+  await page.setViewport({ width, height })
+  console.log("Visiting ", url)
+  await page.goto(url, { waitUntil: "load", timeout: 3000 })
+  await page.addStyleTag({ content: "nextjs-portal{display: none;}" })
+  await page.addStyleTag({
+    content: `:root,body{
+    background: transparent !important;
+    background-color: transparent !important;
+  }`,
+  })
+  await page.waitForTimeout(5000)
+  const result = await page.screenshot({ type: "webp", omitBackground: true })
+  await browser.close()
+
+  return result
+}
+
+export const createShirtScreenshot = functions
+  .region("europe-west3")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "2GB",
+  })
+  .https.onCall(
+    async ({
+      widthQuery,
+      heightQuery,
+      pathQuery,
+      shirtIdQuery,
+      token,
+    }: {
+      widthQuery: string
+      heightQuery: string
+      pathQuery: string
+      shirtIdQuery: string
+      token: string
+    }) => {
+      if (token !== process.env["FIRESTORE_RELAY_SHARED_SECRET"]) {
+        throw new functions.https.HttpsError("unauthenticated", "You need the shared secret")
+      }
+
+      if (!widthQuery || !heightQuery || !pathQuery || !shirtIdQuery) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "Missing width, height, shirtId or path query parameters."
+        )
+      }
+
+      const predictionRef = admin.firestore().collection("predictions").doc(shirtIdQuery)
+      const prediction = await predictionRef.get()
+      if (prediction.data()?.["previewImageUrl"] !== undefined) {
+        return { status: "OK", detail: "Already generated" }
+      }
+
+      const hostDetails = getHostDetails()
+      const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/${pathQuery}`
+
+      const width = parseInt(widthQuery)
+      const height = parseInt(heightQuery)
+
+      try {
+        const screenshot = await takeScreenshot(url, height, width)
+        if (!screenshot) {
+          throw new functions.https.HttpsError("internal", "Failed to generate screenshot for a unknown reason")
+        }
+
+        const storage = admin.storage().bucket()
+        const storageFile = storage.file(`images/${shirtIdQuery}.webp`)
+        await storageFile.save(screenshot, {})
+        await storageFile.makePublic()
+        const [metadata] = await storageFile.getMetadata()
+        const previewImageUrl = metadata.mediaLink
+        console.log("Generated preview image url", previewImageUrl)
+        await predictionRef.update({ previewImageUrl })
+        return { status: "OK", url: previewImageUrl }
+      } catch (e) {
+        console.error(e)
+        if (e instanceof functions.https.HttpsError) {
+          throw e
+        }
+        throw new functions.https.HttpsError("internal", JSON.stringify(e))
+      }
+    }
+  )
 
 export const createScreenshot = functions
   .region("europe-west3")
@@ -52,13 +148,6 @@ export const createScreenshot = functions
       return
     }
 
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-web-security"],
-      executablePath: await getChromeExecutable(),
-      headless: true,
-      ignoreHTTPSErrors: true,
-    })
-
     const hostDetails = getHostDetails()
     const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/${pathQuery}`
 
@@ -66,22 +155,13 @@ export const createScreenshot = functions
     const height = parseInt(heightQuery)
 
     try {
-      const page = await browser.newPage()
-      await page.setViewport({ width, height })
-      console.log("Visiting ", url)
-      await page.goto(url, { waitUntil: "load", timeout: 3000 })
-      await page.addStyleTag({ content: "nextjs-portal{display: none;}" })
-      await page.waitForTimeout(5000)
-      const result = await page.screenshot({ type: "webp" })
-
-      res.header("Content-Type", "image/webp")
-      res.type("image/webp").send(result)
+      const screenshot = await takeScreenshot(url, height, width)
+      res.set("Content-Type", "image/webp")
+      res.contentType("image/webp").send(screenshot)
     } catch (e) {
       res.status(500).send(JSON.stringify(e))
       console.error(e)
     }
-
-    await browser.close()
   })
 
 export const firestoreLevelOne = functions

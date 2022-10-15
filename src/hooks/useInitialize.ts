@@ -1,5 +1,5 @@
 import { getAnalytics, setAnalyticsCollectionEnabled } from "firebase/analytics"
-import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app"
+import { FirebaseApp, FirebaseOptions, getApp, getApps, initializeApp } from "firebase/app"
 import { connectFirestoreEmulator, getFirestore, initializeFirestore } from "firebase/firestore"
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions"
 import { connectStorageEmulator, getStorage } from "firebase/storage"
@@ -27,7 +27,8 @@ export function initialize() {
     }
     if (process.env["NEXT_PUBLIC_USE_FIREBASE_EMULATOR"] === "true") {
       connectFirestoreEmulator(getFirestore(), "localhost", 8080)
-      connectFunctionsEmulator(getFunctions(), "localhost", 5001)
+      connectFunctionsEmulator(getFunctions(), "127.0.0.1", 5001)
+      connectFunctionsEmulator(getFunctions(getApp(), "europe-west3"), "127.0.0.1", 5001)
       connectStorageEmulator(getStorage(), "localhost", 9199)
     }
   }

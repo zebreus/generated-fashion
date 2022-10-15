@@ -19,5 +19,6 @@ export type Prediction =
       seed: number
       resultUrl?: string
       createdAt: number
+      previewImageUrl?: string
     }
   | PredictionRequest
