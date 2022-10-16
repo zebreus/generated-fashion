@@ -1,5 +1,7 @@
+import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
-import { Shirt } from "react-3d-shirt"
+
+const Shirt = dynamic(() => import("react-3d-shirt").then(i => i.Shirt), {})
 
 type CoolShirtProps = {
   url: string | undefined
