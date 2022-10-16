@@ -78,34 +78,43 @@ export const Gallery = () => {
       <section className="relative w-full">
         <h2 className="divider uppercase text-xl">Recent designs</h2>
         <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
-          {predictions?.map(shirt => (
-            <Fragment key={shirt._ref.id}>
-              <ShirtTransitionStyles id={shirt._ref.id} />
-              <Link href={`/shirt/${shirt._ref.id}`} passHref>
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-                <a
-                  className="carousel-item flex flex-col text-center items-center max-w-xs min-w-xs"
-                  id={"shirt-" + shirt._ref.id}
-                  onClick={createLinkClickHandler(`/shirt/${shirt._ref.id}`, router)}
-                >
-                  <h3 className="items-center text-xl flex h-20 mx-5">
-                    {(shirt.prompt.length > 88 ? shirt.prompt.slice(0, 85) + "..." : shirt.prompt).replace(/^./, v =>
-                      v.toUpperCase()
-                    )}
-                  </h3>
-                  <div
-                    className="w-72 h-96"
-                    css={css`
-                      page-transition-tag: ${"shirt-" + shirt._ref.id};
-                      contain: paint;
-                    `}
+          {predictions?.length ? (
+            predictions.map(shirt => (
+              <Fragment key={shirt._ref.id}>
+                <ShirtTransitionStyles id={shirt._ref.id} />
+                <Link href={`/shirt/${shirt._ref.id}`} passHref>
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+                  <a
+                    className="carousel-item flex flex-col text-center items-center max-w-xs min-w-xs"
+                    id={"shirt-" + shirt._ref.id}
+                    onClick={createLinkClickHandler(`/shirt/${shirt._ref.id}`, router)}
                   >
-                    <CoolShirt url={shirt.resultUrl} fallback={shirt?.previewImageUrl} onlyImage />
-                  </div>
-                </a>
-              </Link>
-            </Fragment>
-          ))}
+                    <h3 className="items-center text-xl flex h-20 mx-5">
+                      {(shirt.prompt.length > 88 ? shirt.prompt.slice(0, 85) + "..." : shirt.prompt).replace(/^./, v =>
+                        v.toUpperCase()
+                      )}
+                    </h3>
+                    <div
+                      className="w-72 h-96"
+                      css={css`
+                        page-transition-tag: ${"shirt-" + shirt._ref.id};
+                        contain: paint;
+                      `}
+                    >
+                      <CoolShirt url={shirt.resultUrl} fallback={shirt?.previewImageUrl} onlyImage />
+                    </div>
+                  </a>
+                </Link>
+              </Fragment>
+            ))
+          ) : (
+            <div className="mx-auto">
+              <h3 className="items-center text-xl flex h-20 mx-5">
+                <progress className="progress">loading...</progress>
+              </h3>
+              <div className="w-72 h-96" />
+            </div>
+          )}
         </div>
         <div className="absolute flex justify-between w-full h-full items-center inset-0 pointer-events-none touch-none">
           <a
