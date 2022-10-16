@@ -1,7 +1,19 @@
 import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
 
-const Shirt = dynamic(() => import("react-3d-shirt").then(i => i.Shirt), {})
+let globalLoaded = false
+const informLoaded: Array<(state: boolean) => void> = []
+const Shirt = dynamic(
+  () =>
+    import("react-3d-shirt").then(i => {
+      globalLoaded = true
+      informLoaded.forEach(cb => cb(true))
+      return i.Shirt
+    }),
+  {
+    suspense: false,
+  }
+)
 
 type CoolShirtProps = {
   url: string | undefined
@@ -13,36 +25,41 @@ type CoolShirtProps = {
 
 export const CoolShirt = ({ url, fallback, noMovement, onlyImage }: CoolShirtProps) => {
   const [clientside, setClientside] = useState(typeof window !== "undefined")
+  const [loaded, setLoaded] = useState(globalLoaded)
+  useEffect(() => {
+    informLoaded.push(setLoaded)
+    return () => {
+      informLoaded.splice(informLoaded.indexOf(setLoaded), 1)
+    }
+  }, [])
   useEffect(() => {
     setClientside(true)
   }, [])
-  url
+  const fallbackElement = fallback ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={fallback}
+      alt="placeholder"
+      style={{ objectFit: "contain", height: "100%", width: "auto", margin: "auto" }}
+    />
+  ) : (
+    <div style={{ height: "100%", width: "100%" }}></div>
+  )
   return (
     <>
       {clientside && !onlyImage ? (
-        <Shirt
-          motif={url}
-          color="white"
-          coverLoading={!!fallback}
-          cover={
-            fallback ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={fallback}
-                alt="placeholder"
-                style={{ objectFit: "contain", height: "100%", width: "auto", margin: "auto" }}
-              />
-            ) : null
-          }
-          {...(noMovement ? { wobbleRange: 0, wobbleSpeed: 0 } : {})}
-        />
+        <>
+          {loaded ? null : fallbackElement}
+          <Shirt
+            motif={url}
+            color="white"
+            coverLoading={!!fallback}
+            cover={fallback ? fallbackElement : null}
+            {...(noMovement ? { wobbleRange: 0, wobbleSpeed: 0 } : {})}
+          />
+        </>
       ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={fallback}
-          alt="placeholder"
-          style={{ objectFit: "contain", height: "100%", width: "auto", margin: "auto" }}
-        />
+        fallbackElement
       )}
     </>
   )
