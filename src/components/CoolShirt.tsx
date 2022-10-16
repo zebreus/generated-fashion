@@ -5,9 +5,11 @@ type CoolShirtProps = {
   url: string | undefined
   fallback?: string | undefined
   noMovement?: boolean
+  /** Do not load the 3d model */
+  onlyImage?: boolean
 }
 
-export const CoolShirt = ({ url, fallback, noMovement }: CoolShirtProps) => {
+export const CoolShirt = ({ url, fallback, noMovement, onlyImage }: CoolShirtProps) => {
   const [clientside, setClientside] = useState(typeof window !== "undefined")
   useEffect(() => {
     setClientside(true)
@@ -15,7 +17,7 @@ export const CoolShirt = ({ url, fallback, noMovement }: CoolShirtProps) => {
   url
   return (
     <>
-      {clientside ? (
+      {clientside && !onlyImage ? (
         <Shirt
           motif={url}
           color="white"
@@ -32,7 +34,14 @@ export const CoolShirt = ({ url, fallback, noMovement }: CoolShirtProps) => {
           }
           {...(noMovement ? { wobbleRange: 0, wobbleSpeed: 0 } : {})}
         />
-      ) : null}
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={fallback}
+          alt="placeholder"
+          style={{ objectFit: "contain", height: "100%", width: "auto", margin: "auto" }}
+        />
+      )}
     </>
   )
 }

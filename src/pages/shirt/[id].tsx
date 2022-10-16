@@ -1,5 +1,6 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
+import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { getMainLayout } from "layouts/MainLayout"
 import { useRouter } from "next/router"
@@ -10,11 +11,11 @@ const ShirtPage = () => {
 
   const prediction = usePrediction(id)
   const url = prediction?.resultUrl
-  console.log(url)
   return (
     <>
+      <ShirtTransitionStyles id={id} />
       <section className="flex-grow flex flex-col items-center justify-between w-full">
-        <div className="relative w-full min-h-[80vh] flex-grow max-h-full -mt-4">
+        <div className="relative w-full min-h-[80vh] flex-grow max-h-full" /* + " -mt-4"*/>
           <div
             css={css`
               position: absolute;
@@ -24,6 +25,8 @@ const ShirtPage = () => {
               top: 0;
               margin-top: -2rem;
               margin-bottom: -2rem;
+              page-transition-tag: ${"shirt-" + id};
+              contain: paint;
             `}
           >
             <CoolShirt url={url} fallback={prediction?.previewImageUrl} />
