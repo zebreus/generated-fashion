@@ -96,8 +96,6 @@ export const Gallery = () => {
                   <div
                     className="w-72 h-96"
                     css={css`
-                      margin-top: -2rem;
-                      margin-bottom: -2rem;
                       page-transition-tag: ${"shirt-" + shirt._ref.id};
                       contain: paint;
                     `}

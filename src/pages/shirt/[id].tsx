@@ -23,8 +23,6 @@ const ShirtPage = () => {
               right: 0;
               bottom: 0;
               top: 0;
-              margin-top: -2rem;
-              margin-bottom: -2rem;
               page-transition-tag: ${"shirt-" + id};
               contain: paint;
             `}
