@@ -13,20 +13,22 @@ type SmallShirtProps = {
   shirt?: WithRef<Prediction> | undefined
   /** Never display the 3d model */
   onlyImage?: boolean
+  id?: string
 }
 
 type SmallShirtLoaderProps = {
   predictionId?: string | undefined
   /** Never display the 3d model */
   onlyImage?: boolean
+  id?: string
 }
 
-export const SmallShirtLoader = ({ predictionId, onlyImage }: SmallShirtLoaderProps) => {
+export const SmallShirtLoader = ({ predictionId, onlyImage, id }: SmallShirtLoaderProps) => {
   const shirt = usePrediction(predictionId)
-  return <SmallShirt shirt={shirt} onlyImage={onlyImage} />
+  return <SmallShirt shirt={shirt} onlyImage={onlyImage} id={id} />
 }
 
-export const SmallShirt = ({ shirt, onlyImage }: SmallShirtProps) => {
+export const SmallShirt = ({ shirt, onlyImage, id }: SmallShirtProps) => {
   const router = useRouter()
   return shirt ? (
     <>
@@ -35,7 +37,7 @@ export const SmallShirt = ({ shirt, onlyImage }: SmallShirtProps) => {
         {/* eslint-disable-next-line jsx-a11y/anchor-is-valid,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
         <a
           className="carousel-item flex flex-col text-center items-center max-w-xs min-w-xs"
-          id={"shirt-" + shirt._ref.id}
+          id={id ?? "shirt-" + shirt._ref.id}
           onClick={createLinkClickHandler(`/shirt/${shirt._ref.id}`, router)}
         >
           <h3 className="">
@@ -44,7 +46,8 @@ export const SmallShirt = ({ shirt, onlyImage }: SmallShirtProps) => {
           <div
             className="w-72 h-96"
             css={css`
-              page-transition-tag: ${"shirt-" + shirt._ref.id};
+              // Error when two elements with the same page transition tag are on the page. Not really avoidable with two galleries on the same page.
+              // page-transition-tag: ${"shirt-" + shirt._ref.id};
               contain: paint;
             `}
           >

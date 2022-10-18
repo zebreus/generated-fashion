@@ -1,5 +1,6 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
+import { HeartButton } from "components/HeartButton"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { getMainLayout } from "layouts/MainLayout"
@@ -10,6 +11,7 @@ const ShirtPage = () => {
   const id = typeof router.query["id"] === "string" ? router.query["id"] : router.query["id"]?.[0]
 
   const prediction = usePrediction(id)
+
   const url = prediction?.resultUrl
   return (
     <>
@@ -32,6 +34,7 @@ const ShirtPage = () => {
         </div>
         {/* <h3 className="divider">prompt</h3> */}
         <h3 className="text-xl m-4 text-center z-10">{prediction?.prompt}</h3>
+        <HeartButton id={id} />
         <button
           onClick={async () => {
             const shareData = {

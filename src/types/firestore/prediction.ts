@@ -9,6 +9,7 @@ type PredictionRequest = {
   resultUrl?: undefined
   createdAt?: undefined
   previewImageUrl?: undefined
+  likes?: undefined
 }
 
 export type Prediction =
@@ -21,5 +22,6 @@ export type Prediction =
       resultUrl?: string
       createdAt: number
       previewImageUrl?: string
+      likes: number
     }
   | PredictionRequest

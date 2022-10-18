@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
+import { HeartButton } from "components/HeartButton"
 import { SmallShirt } from "components/SmallShirt"
 import { useLatestPredictions } from "hooks/firestore/simple/useLatestPredictions"
 import { useEffect, useState } from "react"
@@ -72,7 +73,12 @@ export const Gallery = () => {
         <h2 className="divider uppercase text-xl">Recent designs</h2>
         <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
           {predictions?.length ? (
-            predictions.map(shirt => <SmallShirt key={shirt._ref.id} shirt={shirt} onlyImage />)
+            predictions.map(shirt => (
+              <div key={shirt._ref.id} className="flex flex-col items-center">
+                <SmallShirt shirt={shirt} onlyImage id={"shirt-" + shirt._ref.id} />
+                <HeartButton id={shirt._ref.id} />
+              </div>
+            ))
           ) : (
             <SmallShirt shirt={undefined} />
           )}

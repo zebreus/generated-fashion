@@ -1,5 +1,6 @@
 import { Gallery } from "components/Gallery"
 import { Generator } from "components/Generator"
+import { PopularGallery } from "components/PopularGallery"
 import { getMainLayout } from "layouts/MainLayout"
 
 const MainPage = () => {
@@ -7,6 +8,7 @@ const MainPage = () => {
     <>
       <Generator />
       <Gallery />
+      <PopularGallery />
     </>
   )
 }
