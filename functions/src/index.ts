@@ -60,10 +60,6 @@ const takeScreenshot = async (url: string, height: number, width: number) => {
 
 export const createShirtScreenshot = functions
   .region("europe-west3")
-  .runWith({
-    timeoutSeconds: 60,
-    memory: "2GB",
-  })
   .https.onCall(
     async ({
       widthQuery,
@@ -114,7 +110,7 @@ export const createShirtScreenshot = functions
         })
         await storageFile.makePublic()
         const [metadata] = await storageFile.getMetadata()
-        const previewImageUrl = metadata.publicUrl().replace("%2F", "/")
+        const previewImageUrl = (metadata?.publicUrl?.() || storageFile?.publicUrl?.())?.replace("%2F", "/")
         console.log("Generated preview image url", previewImageUrl)
         await predictionRef.update({ previewImageUrl })
         return { status: "OK", url: previewImageUrl }

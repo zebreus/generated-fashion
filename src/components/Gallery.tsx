@@ -1,13 +1,8 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { css } from "@emotion/react"
-import { CoolShirt } from "components/CoolShirt"
-import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
+import { SmallShirt } from "components/SmallShirt"
 import { useLatestPredictions } from "hooks/firestore/simple/useLatestPredictions"
-import { createLinkClickHandler } from "hooks/useLinkClickHandler"
-import Link from "next/link"
-import { useRouter } from "next/router"
-import { Fragment, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export const Gallery = () => {
   const predictions = useLatestPredictions()
@@ -71,49 +66,15 @@ export const Gallery = () => {
     return () => clearInterval(interval)
   }, [ref])
 
-  const router = useRouter()
-
   return (
     <>
       <section className="relative w-full">
         <h2 className="divider uppercase text-xl">Recent designs</h2>
         <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
           {predictions?.length ? (
-            predictions.map(shirt => (
-              <Fragment key={shirt._ref.id}>
-                <ShirtTransitionStyles id={shirt._ref.id} />
-                <Link href={`/shirt/${shirt._ref.id}`} passHref>
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-                  <a
-                    className="carousel-item flex flex-col text-center items-center max-w-xs min-w-xs"
-                    id={"shirt-" + shirt._ref.id}
-                    onClick={createLinkClickHandler(`/shirt/${shirt._ref.id}`, router)}
-                  >
-                    <h3 className="items-center text-xl flex h-20 mx-5">
-                      {(shirt.prompt.length > 88 ? shirt.prompt.slice(0, 85) + "..." : shirt.prompt).replace(/^./, v =>
-                        v.toUpperCase()
-                      )}
-                    </h3>
-                    <div
-                      className="w-72 h-96"
-                      css={css`
-                        page-transition-tag: ${"shirt-" + shirt._ref.id};
-                        contain: paint;
-                      `}
-                    >
-                      <CoolShirt url={shirt.resultUrl} fallback={shirt?.previewImageUrl} onlyImage />
-                    </div>
-                  </a>
-                </Link>
-              </Fragment>
-            ))
+            predictions.map(shirt => <SmallShirt key={shirt._ref.id} shirt={shirt} />)
           ) : (
-            <div className="mx-auto">
-              <h3 className="items-center text-xl flex h-20 mx-5">
-                <progress className="progress">loading...</progress>
-              </h3>
-              <div className="w-72 h-96" />
-            </div>
+            <SmallShirt shirt={undefined} />
           )}
         </div>
         <div className="absolute flex justify-between w-full h-full items-center inset-0 pointer-events-none touch-none">

@@ -1,7 +1,7 @@
 import { css } from "@emotion/react"
 import { setDoc } from "firebase/firestore"
 import { generateId } from "functions/generateId"
-import { getPredictionRef } from "hooks/firestore/getRefs"
+import { getExplorationRef, getPredictionRef } from "hooks/firestore/getRefs"
 import { useTypedText } from "hooks/useTypedText"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -26,6 +26,34 @@ export const Generator = () => {
   const text = useTextAnimation()
   const typedText = useTypedText(text, 50)
   const [focus, setFocus] = useState(false)
+
+  const createPrediction = async (prompt: string) => {
+    const id = generateId()
+    const seed = Math.floor(Math.random() * 100000000)
+    const predictionRef = await getPredictionRef(id)
+    await setDoc(predictionRef, {
+      prompt: prompt,
+      seed: seed,
+      _ref: predictionRef,
+    })
+    return id
+  }
+
+  const generate = async () => {
+    const explorationId = generateId()
+    const predictions = await Promise.all([createPrediction(value), createPrediction(value)])
+
+    const prompt = value
+    const explorationRef = getExplorationRef(explorationId)
+    await setDoc(explorationRef, {
+      type: "initial",
+      prompt: prompt,
+      predictions: predictions,
+      _ref: explorationRef,
+    })
+    console.log({ prompt })
+    router.push(`/explore/${explorationId}`)
+  }
 
   return (
     <section className="flex flex-col my-20 justify-center items-center space-y-3 w-full">
@@ -55,23 +83,7 @@ export const Generator = () => {
         onInput={v => setValue(v.currentTarget.textContent || "")}
         onFocus={() => setFocus(true)}
       ></span>
-      <button
-        className="btn btn-primary text-xl font-normal lowercase pb-1"
-        onClick={async () => {
-          const newId = generateId()
-          const prompt = value
-          const ref = getPredictionRef(newId)
-          const seed = Math.floor(Math.random() * 100000000)
-          await setDoc(getPredictionRef(newId), {
-            prompt: prompt,
-            seed: seed,
-            _ref: ref,
-          })
-          console.log({ prompt })
-          router.push(`/shirt/${newId}`)
-        }}
-        disabled={!value}
-      >
+      <button className="btn btn-primary text-xl font-normal lowercase pb-1" onClick={generate} disabled={!value}>
         generate.
       </button>
     </section>
