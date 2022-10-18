@@ -3,6 +3,7 @@ import { CoolShirt } from "components/CoolShirt"
 import { PromptDisplay } from "components/PromptDisplay"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
 import { WithRef } from "hooks/firestore/FirestoreDocument"
+import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { createLinkClickHandler } from "hooks/useLinkClickHandler"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -10,9 +11,22 @@ import { Prediction } from "types/firestore/prediction"
 
 type SmallShirtProps = {
   shirt?: WithRef<Prediction> | undefined
+  /** Never display the 3d model */
+  onlyImage?: boolean
 }
 
-export const SmallShirt = ({ shirt }: SmallShirtProps) => {
+type SmallShirtLoaderProps = {
+  predictionId?: string | undefined
+  /** Never display the 3d model */
+  onlyImage?: boolean
+}
+
+export const SmallShirtLoader = ({ predictionId, onlyImage }: SmallShirtLoaderProps) => {
+  const shirt = usePrediction(predictionId)
+  return <SmallShirt shirt={shirt} onlyImage={onlyImage} />
+}
+
+export const SmallShirt = ({ shirt, onlyImage }: SmallShirtProps) => {
   const router = useRouter()
   return shirt ? (
     <>
@@ -34,7 +48,7 @@ export const SmallShirt = ({ shirt }: SmallShirtProps) => {
               contain: paint;
             `}
           >
-            <CoolShirt url={shirt.resultUrl} fallback={shirt?.previewImageUrl} onlyImage />
+            <CoolShirt url={shirt.resultUrl} fallback={shirt?.previewImageUrl} onlyImage={onlyImage} />
           </div>
         </a>
       </Link>

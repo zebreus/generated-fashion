@@ -72,7 +72,7 @@ export const Gallery = () => {
         <h2 className="divider uppercase text-xl">Recent designs</h2>
         <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
           {predictions?.length ? (
-            predictions.map(shirt => <SmallShirt key={shirt._ref.id} shirt={shirt} />)
+            predictions.map(shirt => <SmallShirt key={shirt._ref.id} shirt={shirt} onlyImage />)
           ) : (
             <SmallShirt shirt={undefined} />
           )}

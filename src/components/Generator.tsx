@@ -1,7 +1,8 @@
 import { css } from "@emotion/react"
 import { setDoc } from "firebase/firestore"
+import { createPrediction } from "functions/createPrediction"
 import { generateId } from "functions/generateId"
-import { getExplorationRef, getPredictionRef } from "hooks/firestore/getRefs"
+import { getExplorationRef } from "hooks/firestore/getRefs"
 import { useTypedText } from "hooks/useTypedText"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -27,18 +28,6 @@ export const Generator = () => {
   const typedText = useTypedText(text, 50)
   const [focus, setFocus] = useState(false)
 
-  const createPrediction = async (prompt: string) => {
-    const id = generateId()
-    const seed = Math.floor(Math.random() * 100000000)
-    const predictionRef = await getPredictionRef(id)
-    await setDoc(predictionRef, {
-      prompt: prompt,
-      seed: seed,
-      _ref: predictionRef,
-    })
-    return id
-  }
-
   const generate = async () => {
     const explorationId = generateId()
     const predictions = await Promise.all([createPrediction(value), createPrediction(value)])
@@ -51,7 +40,6 @@ export const Generator = () => {
       predictions: predictions,
       _ref: explorationRef,
     })
-    console.log({ prompt })
     router.push(`/explore/${explorationId}`)
   }
 

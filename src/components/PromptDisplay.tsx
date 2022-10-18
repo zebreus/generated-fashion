@@ -67,7 +67,6 @@ export const PromptDisplay = ({ prompt, maxCharacters = 105 }: PromptDisplayProp
   const fontIndex = lengths.findIndex(length => length < targetWidth)
 
   const font = fontIndex === -1 ? fonts[fonts.length - 1] : fonts[fontIndex]
-  console.log(lengths)
 
   return (
     <div className={`tooltip z-10 tooltip-bottom`} data-tip={prompt}>
