@@ -118,7 +118,7 @@ export const Explorer = ({ explorationId }: ExplorerProps) => {
             <>
               {exploration?.predictions.map(predictionId => (
                 <div key={predictionId} className="flex flex-col items-center">
-                  <SmallShirtLoader predictionId={predictionId} onlyImage id={"shirt-" + predictionId} />
+                  <SmallShirtLoader predictionId={predictionId} id={"shirt-" + predictionId} />
                   <HeartButton id={predictionId} />
                 </div>
               ))}
