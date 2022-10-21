@@ -7,9 +7,9 @@ export const CartOverview = () => {
 
   return (
     <>
-      <h1 className="text-3xl">Cart</h1>
-      <ul className="">
-        {cart?.length ? cart.map(item => <CartRow key={item.id} item={item} />) : <h1>You cart is empty</h1>}
+      <h2 className="text-3xl">Cart</h2>
+      <ul className="w-full">
+        {cart?.length ? cart.map(item => <CartRow key={item.id} item={item} />) : <p>You cart is empty</p>}
       </ul>
       <button
         className="btn btn-primary mb-auto"
@@ -27,10 +27,10 @@ const CartRow = ({ item }: { item: CartItem }) => {
   const prediction = usePrediction(item.id)
   const { setCart } = useCart()
   return (
-    <li className="flex-row flex justify-start items-center">
+    <li className="flex-row flex justify-center items-center mr-3">
       <CartShirt id={item.id} />
-      <p className="w-80">{prediction?.prompt}</p>
-      <p className="w-20">x {item.quantity}</p>
+      <p className="flex-grow max-w-sm">{prediction?.prompt}</p>
+      <p className="w-10">x {item.quantity}</p>
       <button
         className="btn btn-square btn-outline btn-error"
         onClick={() => {
