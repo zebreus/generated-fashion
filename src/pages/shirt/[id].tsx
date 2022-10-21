@@ -1,4 +1,5 @@
 import { css } from "@emotion/react"
+import { CartButton } from "components/CartButton"
 import { CoolShirt } from "components/CoolShirt"
 import { HeartButton } from "components/HeartButton"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
@@ -35,6 +36,7 @@ const ShirtPage = () => {
         {/* <h3 className="divider">prompt</h3> */}
         <h3 className="text-xl m-4 text-center z-10">{prediction?.prompt}</h3>
         <HeartButton id={id} />
+        <CartButton id={id} />
         <button
           onClick={async () => {
             const shareData = {
