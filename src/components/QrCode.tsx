@@ -27,7 +27,7 @@ export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodePr
               position: "absolute",
               width: `${size}%`,
               height: `${size}%`,
-              transform: "scale(1.2)",
+              transform: "scale(1.15)",
               background: dotColor,
               left: `${rowIndex * size}%`,
               top: `${colIndex * size}%`,
