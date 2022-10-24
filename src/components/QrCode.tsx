@@ -2,20 +2,24 @@ import QrCodeSvg from "qrcode-svg"
 
 type QrCodeProps = {
   data?: string
+  darkBackground?: boolean
 }
 
-export const QrCode = ({ data = "https://www.w3.org" }: QrCodeProps) => {
+export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodeProps) => {
   const code = new QrCodeSvg(data)
   const modules = code.qrcode.modules
   const length = modules.length
 
   const size = 100 / length
 
+  const dotColor = darkBackground ? "white" : "black"
+
   const divs = modules
     .map((row, colIndex) =>
       row.map((field, rowIndex) => {
-        const color = field ? "black" : "white"
-        return (
+        const isTransparent = field !== !!darkBackground
+
+        return isTransparent ? (
           <div
             key={`${colIndex}-${rowIndex}`}
             style={{
@@ -23,12 +27,13 @@ export const QrCode = ({ data = "https://www.w3.org" }: QrCodeProps) => {
               position: "absolute",
               width: `${size}%`,
               height: `${size}%`,
-              background: color,
+              transform: "scale(1.2)",
+              background: dotColor,
               left: `${rowIndex * size}%`,
               top: `${colIndex * size}%`,
             }}
           />
-        )
+        ) : null
       })
     )
     .flat()
@@ -41,7 +46,7 @@ export const QrCode = ({ data = "https://www.w3.org" }: QrCodeProps) => {
         position: "relative",
         width: `100%`,
         height: `100%`,
-        background: "white",
+        background: "transparent",
       }}
     >
       {divs}

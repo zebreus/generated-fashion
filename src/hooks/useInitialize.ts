@@ -26,7 +26,7 @@ export function initialize() {
       console.error(error)
     }
     if (process.env["NEXT_PUBLIC_USE_FIREBASE_EMULATOR"] === "true") {
-      connectFirestoreEmulator(getFirestore(), "localhost", 8080)
+      connectFirestoreEmulator(getFirestore(), "127.0.0.1", 8080)
       connectFunctionsEmulator(getFunctions(), "127.0.0.1", 5001)
       connectFunctionsEmulator(getFunctions(getApp(), "europe-west3"), "127.0.0.1", 5001)
       connectStorageEmulator(getStorage(), "localhost", 9199)

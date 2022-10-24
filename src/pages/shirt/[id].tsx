@@ -13,7 +13,8 @@ const ShirtPage = () => {
 
   const prediction = usePrediction(id)
 
-  const url = prediction?.resultUrl
+  // const url = prediction?.resultUrl
+  const url = `/api/${id}/print`
   return (
     <>
       <ShirtTransitionStyles id={id} />
