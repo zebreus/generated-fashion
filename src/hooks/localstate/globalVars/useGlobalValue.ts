@@ -76,7 +76,7 @@ export function useGlobalValue<Type>(
       if (typeof newValue === "function") {
         newValue
         const oldValue = getGlobalValue<Type>(map, key)
-        oldValue && setGlobalValue(map, key, newValue(oldValue))
+        setGlobalValue(map, key, newValue(oldValue))
         return
       }
       setGlobalValue(map, key, newValue)

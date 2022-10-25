@@ -2,6 +2,7 @@ import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
 import { PromptDisplay } from "components/PromptDisplay"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
+import { usePageTransitionTag } from "functions/usePageTransitionTag"
 import { WithRef } from "hooks/firestore/FirestoreDocument"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { createLinkClickHandler } from "hooks/useLinkClickHandler"
@@ -30,6 +31,7 @@ export const SmallShirtLoader = ({ predictionId, onlyImage, id }: SmallShirtLoad
 
 export const SmallShirt = ({ shirt, onlyImage, id }: SmallShirtProps) => {
   const router = useRouter()
+  const tag = usePageTransitionTag(`shirt-${shirt?._ref.id}`)
   return shirt ? (
     <>
       <ShirtTransitionStyles id={shirt._ref.id} />
@@ -47,7 +49,7 @@ export const SmallShirt = ({ shirt, onlyImage, id }: SmallShirtProps) => {
             className="w-72 h-96"
             css={css`
               // Error when two elements with the same page transition tag are on the page. Not really avoidable with two galleries on the same page.
-              // page-transition-tag: ${"shirt-" + shirt._ref.id};
+              page-transition-tag: ${tag};
               contain: paint;
             `}
           >
