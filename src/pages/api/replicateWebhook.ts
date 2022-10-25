@@ -34,7 +34,11 @@ const handler: NextApiHandler = async (req, res) => {
     resultUrl: typeof prediction.output?.[0] === "string" ? prediction.output?.[0] : undefined,
   })
 
-  await updateScreenshot(matchingPrediction._ref.id)
+  updateScreenshot(matchingPrediction._ref.id)
+  // Try to ensure, that the screenshot update is at least triggered
+  await new Promise(r => setTimeout(r, 1500))
+
+  res.status(200).json({ state: "success" })
 }
 
 export default handler
