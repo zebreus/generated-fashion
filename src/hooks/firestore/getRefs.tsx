@@ -1,6 +1,7 @@
 import { collection, doc, DocumentData, DocumentReference, getFirestore } from "firebase/firestore"
 import { genericConverter, WithRef } from "hooks/firestore/FirestoreDocument"
 import { Exploration } from "types/firestore/exploration"
+import { Parrot } from "types/firestore/parrot"
 import { Prediction } from "types/firestore/prediction"
 
 function getConvertedCollection<T extends DocumentData>(path: string) {
@@ -23,6 +24,18 @@ export function getPredictionRef(predictionId: string): DocumentReference<WithRe
 export function getPredictionRef(predictionId: string | undefined): undefined | DocumentReference<WithRef<Prediction>>
 export function getPredictionRef(predictionId: string | undefined): undefined | DocumentReference<WithRef<Prediction>> {
   return predictionId ? getConvertedDocument<Prediction>(`predictions/${predictionId}`) : undefined
+}
+
+// ts-prune-ignore-next
+export function getParrotsRef() {
+  return getConvertedCollection<Parrot>(`parrots`)
+}
+
+// ts-prune-ignore-next
+export function getParrotRef(parrotId: string): DocumentReference<WithRef<Parrot>>
+export function getParrotRef(parrotId: string | undefined): undefined | DocumentReference<WithRef<Parrot>>
+export function getParrotRef(parrotId: string | undefined): undefined | DocumentReference<WithRef<Parrot>> {
+  return parrotId ? getConvertedDocument<Parrot>(`parrots/${parrotId}`) : undefined
 }
 
 // ts-prune-ignore-next

@@ -2,7 +2,7 @@ import { css } from "@emotion/react"
 import { setDoc } from "firebase/firestore"
 import { createPrediction } from "functions/createPrediction"
 import { generateId } from "functions/generateId"
-import { getExplorationRef } from "hooks/firestore/getRefs"
+import { getExplorationRef, getParrotRef } from "hooks/firestore/getRefs"
 import { useTypedText } from "hooks/useTypedText"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -39,6 +39,13 @@ export const Generator = () => {
       prompt: prompt,
       predictions: predictions,
       _ref: explorationRef,
+    })
+    const parrotId = generateId()
+    const parrotRef = getParrotRef(parrotId)
+    await setDoc(parrotRef, {
+      explorationId: explorationId,
+      prompt: prompt,
+      _ref: parrotRef,
     })
     router.push(`/explore/${explorationId}`)
   }

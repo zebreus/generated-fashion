@@ -1,10 +1,11 @@
-import { DocumentReference, updateDoc } from "firebase/firestore"
+import { arrayUnion, DocumentReference, updateDoc } from "firebase/firestore"
+import { createPrediction } from "functions/createPrediction"
 import { getOwnUrl } from "functions/getOwnUrl"
-import { updateScreenshot } from "functions/updateScreenshot"
-import { getPredictionRef } from "hooks/firestore/getRefs"
+import { getDocument } from "hooks/firestore/core/useDocument"
+import { getExplorationRef, getParrotRef } from "hooks/firestore/getRefs"
 import { NextApiHandler } from "next"
 import { pollPrediction, predict } from "replicate-api"
-import { Prediction } from "types/firestore/prediction"
+import { Parrot } from "types/firestore/parrot"
 
 type BeforeAndAfter =
   | {
@@ -28,7 +29,7 @@ type RelayedChange = {
   timestamp: string
 } & BeforeAndAfter
 
-const replicateVersion = "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef"
+const replicateVersion = "7349c6ce7eb83fc9bc2e98e505a55ee28d7a8f4aa5fb6f711fad18724b4f2389"
 
 const handler: NextApiHandler = async (req, res) => {
   const id = typeof req.query["id"] === "string" ? req.query["id"] : undefined
@@ -48,7 +49,7 @@ const handler: NextApiHandler = async (req, res) => {
     return
   }
 
-  const doc = change.after as Prediction
+  const doc = change.after as Parrot
   if (doc.state !== undefined) {
     res.status(200).json({ state: "success" })
     return
@@ -60,22 +61,19 @@ const handler: NextApiHandler = async (req, res) => {
     return
   }
 
-  const seed = doc.seed || Math.floor(Math.random() * 100000000)
-
   const prediction = await predict({
     version: replicateVersion,
-    input: { prompt: prompt, num_inference_steps: 100, seed: seed },
+    input: { prompt: prompt },
     token: process.env["REPLICATE_TOKEN"] || "",
-    webhook: getOwnUrl() + "/api/replicate/predictionHook",
+    webhook: getOwnUrl() + "/api/replicate/parrotHook",
   })
 
-  const ref = getPredictionRef(id)
+  const ref = getParrotRef(id)
 
   await updateDoc(ref, {
     createdAt: Date.now(),
     replicateId: prediction.id,
     prompt: prompt,
-    seed: seed,
     state: "starting",
     version: replicateVersion,
   })
@@ -88,18 +86,34 @@ const handler: NextApiHandler = async (req, res) => {
   return
 }
 
-const waitForResult = async (replicateId: string, ref: DocumentReference<Prediction>) => {
+const waitForResult = async (replicateId: string, ref: DocumentReference<Parrot>) => {
   const prediction = await pollPrediction({
     id: replicateId,
     token: process.env["REPLICATE_TOKEN"] || "",
   })
 
+  const outputString = typeof prediction.output === "string" ? (prediction.output as string) : undefined
+
+  const results = outputString?.split(/\n-+\n/)
+
   await updateDoc(ref, {
     state: prediction.status,
-    resultUrl: typeof prediction.output?.[0] === "string" ? prediction.output?.[0] : undefined,
+    results: results ?? [],
   })
 
-  await updateScreenshot(ref.id)
+  const parrot = await getDocument(ref)
+
+  if (!parrot) {
+    throw new Error("Failed to get parrot after update")
+  }
+
+  const explorationRef = await getExplorationRef(parrot.explorationId)
+
+  const newPredictions = await Promise.all((parrot.results ?? []).map(result => createPrediction(result)))
+
+  await updateDoc(explorationRef, {
+    predictions: arrayUnion(...newPredictions),
+  })
 }
 
 export default handler
