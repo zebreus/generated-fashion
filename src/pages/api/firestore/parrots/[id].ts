@@ -109,7 +109,9 @@ const waitForResult = async (replicateId: string, ref: DocumentReference<Parrot>
 
   const explorationRef = await getExplorationRef(parrot.explorationId)
 
-  const newPredictions = await Promise.all((parrot.results ?? []).map(result => createPrediction(result)))
+  const newPredictions = await Promise.all(
+    (parrot.results ?? []).slice(0, 2).map(result => createPrediction(parrot.prompt, result))
+  )
 
   await updateDoc(explorationRef, {
     predictions: arrayUnion(...newPredictions),

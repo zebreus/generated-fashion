@@ -5,6 +5,8 @@ type PredictionRequest = {
   version?: undefined
   state?: undefined
   prompt: string
+  /** This wll be used as prompt, if set */
+  actualPrompt?: string
   seed: number
   resultUrl?: undefined
   createdAt?: undefined
@@ -18,6 +20,8 @@ export type Prediction =
       version: string
       state: PredictionState
       prompt: string
+      /** This wll be used as prompt, if set */
+      actualPrompt?: string
       seed: number
       resultUrl?: string
       createdAt: number
