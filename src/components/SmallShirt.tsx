@@ -53,7 +53,7 @@ export const SmallShirt = ({ shirt, onlyImage, id }: SmallShirtProps) => {
               contain: paint;
             `}
           >
-            <CoolShirt url={shirt.resultUrl} fallback={shirt?.previewImageUrl} onlyImage={onlyImage} />
+            <CoolShirt url={`/api/${shirt?._ref.id}/print`} fallback={shirt?.previewImageUrl} onlyImage={onlyImage} />
           </div>
         </a>
       </Link>
