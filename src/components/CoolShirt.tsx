@@ -1,3 +1,4 @@
+import { usePageTransitionsAvailable } from "hooks/usePageTransitionsAvailable"
 import dynamic from "next/dynamic"
 import { useEffect, useState } from "react"
 
@@ -45,6 +46,10 @@ export const CoolShirt = ({ url, fallback, noMovement, onlyImage }: CoolShirtPro
   ) : (
     <div style={{ height: "100%", width: "100%" }}></div>
   )
+
+  const pageTransitionsAvailable = usePageTransitionsAvailable()
+  console.log(pageTransitionsAvailable)
+
   return (
     <>
       {clientside && !onlyImage ? (
@@ -56,6 +61,7 @@ export const CoolShirt = ({ url, fallback, noMovement, onlyImage }: CoolShirtPro
             coverLoading={!!fallback}
             cover={fallback ? fallbackElement : null}
             {...(noMovement ? { wobbleRange: 0, wobbleSpeed: 0 } : {})}
+            renderDelay={pageTransitionsAvailable ? 400 : 0}
           />
         </>
       ) : (
