@@ -1,6 +1,7 @@
 import { css } from "@emotion/react"
 import { ShirtPrint } from "components/ShirtPrint"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
+
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
@@ -25,7 +26,7 @@ const ShirtImage = () => {
         position: fixed;
         height: ${16 * dpi}px;
         width: ${12 * dpi}px;
-        background: black;
+        background: white;
         transform-origin: top left;
         transform: scale(${height / (16 * dpi)});
       `}
@@ -35,6 +36,8 @@ const ShirtImage = () => {
         imageUrl={url || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
         qrCodeText={"generated.fashion/28"}
         qrCodeUrl={"https://generated.fashion/shirt/" + id}
+        width={12 * dpi}
+        height={16 * dpi}
       />
     </div>
   )

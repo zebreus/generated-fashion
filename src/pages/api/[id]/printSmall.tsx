@@ -33,7 +33,7 @@ const ogImagePrint = async (request: Request) => {
     {
       height: 16 * dpi,
       width: 12 * dpi,
-      scale: 1,
+      scale: 0.1,
     }
   )
 }

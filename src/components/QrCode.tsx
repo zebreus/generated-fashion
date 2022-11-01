@@ -14,6 +14,8 @@ export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodePr
 
   const dotColor = darkBackground ? "white" : "black"
 
+  const margin = size * 0.1
+
   const divs = modules
     .map((row, colIndex) =>
       row.map((field, rowIndex) => {
@@ -25,12 +27,11 @@ export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodePr
             style={{
               display: "flex",
               position: "absolute",
-              width: `${size}%`,
-              height: `${size}%`,
-              transform: "scale(1.15)",
+              width: `${size + margin}%`,
+              height: `${size + margin}%`,
               background: dotColor,
-              left: `${rowIndex * size}%`,
-              top: `${colIndex * size}%`,
+              left: `${rowIndex * size - margin}%`,
+              top: `${colIndex * size - margin}%`,
             }}
           />
         ) : null
@@ -42,7 +43,6 @@ export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodePr
     <div
       style={{
         display: "flex",
-
         position: "relative",
         width: `100%`,
         height: `100%`,
