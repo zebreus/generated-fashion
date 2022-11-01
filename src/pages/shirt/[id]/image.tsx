@@ -8,7 +8,7 @@ const ShirtImage = () => {
   const id = typeof router.query["id"] === "string" ? router.query["id"] : router.query["id"]?.[0]
 
   const prediction = usePrediction(id)
-  const url = `/api/${id}/print`
+  const url = `/api/${id}/printSmall`
 
   return (
     <div
