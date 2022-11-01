@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react"
 
 export const usePageTransitionTag = (wanted: string) => {
   const id = useMemo(() => generateId(), [])
-  const [activeId, setActiveId] = useGlobalValue("pageTransitionTags", wanted, "")
+  const [activeId, setActiveId] = useGlobalValue("pageTransitionTags", wanted, id)
 
   useEffect(() => {
     setActiveId(currentId => (!currentId ? id : currentId))
@@ -14,7 +14,7 @@ export const usePageTransitionTag = (wanted: string) => {
     return () => {
       setActiveId(currentId => (currentId === id ? "" : currentId))
     }
-  }, [setActiveId, id])
+  }, [id, setActiveId])
 
   const active = activeId === id
   return active ? wanted : "none"
