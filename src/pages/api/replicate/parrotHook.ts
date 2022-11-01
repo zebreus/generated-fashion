@@ -1,6 +1,7 @@
-import { updateDoc, where } from "firebase/firestore"
+import { arrayUnion, updateDoc, where } from "firebase/firestore"
+import { createPrediction } from "functions/createPrediction"
 import { getQuery } from "hooks/firestore/core/useQuery"
-import { getParrotsRef } from "hooks/firestore/getRefs"
+import { getExplorationRef, getParrotsRef } from "hooks/firestore/getRefs"
 import { initialize } from "hooks/useInitialize"
 import { NextApiHandler } from "next"
 import { processWebhook } from "replicate-api"
@@ -16,14 +17,14 @@ const handler: NextApiHandler = async (req, res) => {
 
   const matchingPredictions = await getQuery(getParrotsRef(), where("replicateId", "==", prediction.id))
 
-  const matchingPrediction = matchingPredictions?.[0]
+  const parrot = matchingPredictions?.[0]
 
-  if (!matchingPrediction) {
+  if (!parrot) {
     res.status(404).json({ detail: "prediction not found" })
     return
   }
 
-  if (prediction.status === matchingPrediction.state) {
+  if (prediction.status === parrot.state) {
     res.status(200).json({ state: "success" })
     return
   }
@@ -32,9 +33,20 @@ const handler: NextApiHandler = async (req, res) => {
 
   const results = outputString?.split(/\n-+\n/)
 
-  await updateDoc(matchingPrediction._ref, {
+  // Write results to parrot doc
+  await updateDoc(parrot._ref, {
     state: prediction.status,
     results: results ?? [],
+  })
+
+  const explorationRef = await getExplorationRef(parrot.explorationId)
+
+  const newPredictions = await Promise.all(
+    (results ?? []).slice(0, 2).map(result => createPrediction(parrot.prompt, result))
+  )
+
+  await updateDoc(explorationRef, {
+    predictions: arrayUnion(...newPredictions),
   })
 
   res.status(200).json({ state: "success" })
