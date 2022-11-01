@@ -4,6 +4,7 @@ import { CoolShirt } from "components/CoolShirt"
 import { HeartButton } from "components/HeartButton"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
+import { getMotifUrl } from "hooks/useMotifUrl"
 import { getMainLayout } from "layouts/MainLayout"
 import { useRouter } from "next/router"
 
@@ -13,8 +14,7 @@ const ShirtPage = () => {
 
   const prediction = usePrediction(id)
 
-  // const url = prediction?.resultUrl
-  const url = `/api/${id}/print`
+  const motifUrl = getMotifUrl(prediction)
   return (
     <>
       <ShirtTransitionStyles id={id} />
@@ -31,7 +31,7 @@ const ShirtPage = () => {
               contain: paint;
             `}
           >
-            <CoolShirt url={url} fallback={prediction?.previewImageUrl} />
+            <CoolShirt url={motifUrl} fallback={prediction?.previewImageUrl} />
           </div>
         </div>
         {/* <h3 className="divider">prompt</h3> */}

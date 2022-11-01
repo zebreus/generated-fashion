@@ -1,10 +1,11 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
+import { getMotifUrl } from "hooks/useMotifUrl"
 
 export const CartShirt = ({ id }: { id: string }) => {
   const shirt = usePrediction(id)
-
+  const motifUrl = getMotifUrl(shirt, { small: true })
   return (
     <div
       className="w-36 h-48"
@@ -14,7 +15,7 @@ export const CartShirt = ({ id }: { id: string }) => {
         contain: paint;
       `}
     >
-      <CoolShirt url={`/api/${shirt?._ref.id}/print`} fallback={shirt?.previewImageUrl} onlyImage={true} />
+      <CoolShirt url={motifUrl} fallback={shirt?.previewImageUrl} onlyImage={true} />
     </div>
   )
 }

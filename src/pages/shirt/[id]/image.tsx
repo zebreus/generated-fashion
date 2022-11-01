@@ -1,6 +1,7 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
+import { getMotifUrl } from "hooks/useMotifUrl"
 import { useRouter } from "next/router"
 
 const ShirtImage = () => {
@@ -8,7 +9,7 @@ const ShirtImage = () => {
   const id = typeof router.query["id"] === "string" ? router.query["id"] : router.query["id"]?.[0]
 
   const prediction = usePrediction(id)
-  const url = `/api/${id}/printSmall`
+  const motifUrl = getMotifUrl(prediction, { small: true })
 
   return (
     <div
@@ -18,7 +19,7 @@ const ShirtImage = () => {
         height: 100%;
       `}
     >
-      <CoolShirt url={url} fallback={prediction?.previewImageUrl} noMovement />
+      <CoolShirt url={motifUrl} fallback={prediction?.previewImageUrl} noMovement />
     </div>
   )
 }
