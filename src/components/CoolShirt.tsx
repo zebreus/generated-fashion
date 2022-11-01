@@ -48,7 +48,6 @@ export const CoolShirt = ({ url, fallback, noMovement, onlyImage }: CoolShirtPro
   )
 
   const pageTransitionsAvailable = usePageTransitionsAvailable()
-  console.log(pageTransitionsAvailable)
 
   return (
     <>

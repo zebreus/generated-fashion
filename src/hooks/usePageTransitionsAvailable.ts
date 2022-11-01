@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const getPageTransitionsAvailable = () => {
+export const getPageTransitionsAvailable = () => {
   if (typeof window === "undefined") {
     return false
   }

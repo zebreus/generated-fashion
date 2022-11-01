@@ -9,6 +9,7 @@ type MainLayoutProps = {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const linkClickHandler = useLinkClickHandler("/")
+  const cartLinkClickHandler = useLinkClickHandler("/cart")
   const { cart } = useCart()
   return (
     <main className="flex flex-col min-h-screen items-center justify-between">
@@ -22,8 +23,11 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         {cart?.length ? (
           <>
             <Link href="/cart" passHref>
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a className="btn btn-primary btn-square btn-outline absolute right-0 top-0 m-3">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+              <a
+                onClick={cartLinkClickHandler}
+                className="btn btn-primary btn-square btn-outline absolute right-0 top-0 m-3"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 16 16">
                   <g fill="none">
                     <path

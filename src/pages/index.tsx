@@ -1,14 +1,14 @@
-import { Gallery } from "components/Gallery"
 import { Generator } from "components/Generator"
-import { PopularGallery } from "components/PopularGallery"
+import { PopularShirts } from "components/PopularShirts"
+import { RecentShirts } from "components/RecentShirts"
 import { getMainLayout } from "layouts/MainLayout"
 
 const MainPage = () => {
   return (
     <>
       <Generator />
-      <Gallery />
-      <PopularGallery />
+      <RecentShirts />
+      <PopularShirts />
     </>
   )
 }

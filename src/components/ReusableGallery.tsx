@@ -1,19 +1,18 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { HeartButton } from "components/HeartButton"
-import { SmallShirt } from "components/SmallShirt"
-import { usePopularPredictions } from "hooks/firestore/simple/usePopularPredictions"
-import { useEffect, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 
-export const PopularGallery = () => {
-  const predictions = usePopularPredictions()
+type ReusableGalleryProps = {
+  elementIds?: string[]
+  children: ReactNode
+}
+
+export const ReusableGallery = ({ elementIds, children }: ReusableGalleryProps) => {
   const [ref, setRef] = useState<HTMLDivElement | null>(null)
   const [nextElement, setNextElement] = useState<string | undefined>(
-    predictions?.[0] ? "pshirt-" + predictions?.[Math.min(3, predictions.length - 1)]._ref.id : undefined
+    elementIds?.[0] ? elementIds?.[Math.min(3, elementIds.length - 1)] : undefined
   )
-  const [prevElement, setPrevElement] = useState<string | undefined>(
-    predictions?.[0] ? "pshirt-" + predictions?.[0]._ref.id : undefined
-  )
+  const [prevElement, setPrevElement] = useState<string | undefined>(elementIds?.[0] ? elementIds[0] : undefined)
 
   useEffect(() => {
     if (!ref) {
@@ -69,41 +68,25 @@ export const PopularGallery = () => {
 
   return (
     <>
-      <section className="relative w-full">
-        <h2 className="divider uppercase text-xl">Popular designs</h2>
-        <div ref={setRef} className="carousel carousel-center p-4 space-x-4 bg-transparent">
-          {predictions?.length ? (
-            predictions.map(shirt => (
-              <div key={shirt._ref.id} className="flex flex-col items-center">
-                <SmallShirt shirt={shirt} onlyImage id={"pshirt-" + shirt._ref.id} />
-                <HeartButton id={shirt._ref.id} />
-              </div>
-            ))
-          ) : (
-            <SmallShirt shirt={undefined} />
-          )}
-        </div>
-        <div className="absolute flex justify-between w-full h-full items-center inset-0 pointer-events-none touch-none">
-          <a
-            href={`#${prevElement ?? ref?.firstElementChild?.id}`}
-            className={`btn btn-primary btn-circle m-6 pointer-events-auto touch-auto ${
-              !prevElement && "btn-disabled"
-            }`}
-            aria-disabled={!prevElement}
-          >
-            ❮
-          </a>
-          <a
-            href={`#${nextElement ?? ref?.lastElementChild?.id}`}
-            className={`btn btn-primary btn-circle m-6 pointer-events-auto touch-auto ${
-              !nextElement && "btn-disabled"
-            }`}
-            aria-disabled={!nextElement}
-          >
-            ❯
-          </a>
-        </div>
-      </section>
+      <div ref={setRef} className="carousel p-4 space-x-4 bg-transparent">
+        {children}
+      </div>
+      <div className="absolute flex justify-between w-full h-full items-center inset-0 pointer-events-none touch-none">
+        <a
+          href={`#${prevElement ?? ref?.firstElementChild?.id}`}
+          className={`btn btn-primary btn-circle m-6 pointer-events-auto touch-auto ${!prevElement && "btn-disabled"}`}
+          aria-disabled={!prevElement}
+        >
+          ❮
+        </a>
+        <a
+          href={`#${nextElement ?? ref?.lastElementChild?.id}`}
+          className={`btn btn-primary btn-circle m-6 pointer-events-auto touch-auto ${!nextElement && "btn-disabled"}`}
+          aria-disabled={!nextElement}
+        >
+          ❯
+        </a>
+      </div>
     </>
   )
 }

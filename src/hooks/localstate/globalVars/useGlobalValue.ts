@@ -71,6 +71,13 @@ export function useGlobalValue<Type>(
   const [, setRealValue] = useState<Type | undefined>()
   const value = getGlobalValue<Type>(map, key) || defaultValue
 
+  // if (defaultValue !== undefined && getGlobalValue<Type>(map, key) === undefined) {
+  //   const realDefaultValue =
+  //     typeof defaultValue === "function" ? defaultValue(getGlobalValue<Type>(map, key)) : defaultValue
+  //   setGlobalValue(map, key, realDefaultValue)
+  // }
+  // const value = getGlobalValue<Type>(map, key)
+
   const setter: Dispatch<SetValueAction<Type>> = useCallback(
     newValue => {
       if (typeof newValue === "function") {

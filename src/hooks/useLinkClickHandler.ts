@@ -1,5 +1,5 @@
 import { NextRouter, useRouter } from "next/router"
-import { useMemo } from "react"
+import { SyntheticEvent, useMemo } from "react"
 
 export const useLinkClickHandler = (url?: string) => {
   const router = useRouter()
@@ -14,25 +14,29 @@ export const useLinkClickHandler = (url?: string) => {
 }
 
 export const createLinkClickHandler = (url: string, router: NextRouter) => {
-  url
-  router
-  return () => undefined
-  // if (
-  //   typeof window === "undefined" ||
-  //   !(document as { createDocumentTransition?: (cb: () => void) => void }).createDocumentTransition
-  // ) {
-  //   console.error("Document transitions are unavailable")
-  //   return () => {}
-  // }
-  // return (e: SyntheticEvent) => {
-  //   e.preventDefault()
-  //   const transition = (
-  //     document as unknown as {
-  //       createDocumentTransition: () => { start: (cb: () => Promise<void> | void) => void }
-  //     }
-  //   ).createDocumentTransition()
-  //   transition.start(async () => {
-  //     await router.push(url)
-  //   })
-  // }
+  // url
+  // router
+  // return () => undefined
+  if (
+    typeof window === "undefined" ||
+    !(document as { createDocumentTransition?: (cb: () => void) => void }).createDocumentTransition
+  ) {
+    console.error("Document transitions are unavailable")
+    return () => {}
+  }
+  return async (e: SyntheticEvent) => {
+    e.preventDefault?.()
+    const transition = (
+      document as unknown as {
+        createDocumentTransition: () => { start: (cb: () => Promise<void> | void) => void }
+      }
+    ).createDocumentTransition()
+    // await new Promise<void>(r => setTimeout(() => r(), 2000))
+
+    transition.start(async () => {
+      await router.push(url)
+      // Page is weirdly shifted for this duration
+      await new Promise<void>(r => setTimeout(() => r(), 10))
+    })
+  }
 }
