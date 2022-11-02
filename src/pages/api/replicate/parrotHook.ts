@@ -42,7 +42,7 @@ const handler: NextApiHandler = async (req, res) => {
   const explorationRef = await getExplorationRef(parrot.explorationId)
 
   const newPredictions = await Promise.all(
-    (results ?? []).slice(0, 2).map(result => createPrediction(parrot.prompt, result))
+    (results ?? []).slice(0, 5).map(result => createPrediction(parrot.prompt, result))
   )
 
   await updateDoc(explorationRef, {
