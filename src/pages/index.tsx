@@ -9,8 +9,8 @@ const MainPage = () => {
     <>
       <Generator />
       <MyLikedShirts />
-      <RecentShirts />
       <PopularShirts />
+      <RecentShirts />
     </>
   )
 }
