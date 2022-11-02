@@ -8,7 +8,7 @@ export const MyLikedShirts = () => {
 
   const elementIds = shirtIds?.map(shirtId => "liked-shirt-" + shirtId)
 
-  return (
+  return shirtIds?.length ? (
     <>
       <section className="relative w-full">
         <h2 className="divider uppercase text-xl">My favorites</h2>
@@ -22,5 +22,5 @@ export const MyLikedShirts = () => {
         </ReusableGallery>
       </section>
     </>
-  )
+  ) : null
 }
