@@ -3,10 +3,20 @@ import QrCodeSvg from "qrcode-svg"
 type QrCodeProps = {
   data?: string
   darkBackground?: boolean
+  errorCorrection?: "low" | "medium" | "quartile" | "high"
+  /** Get pixel aligned edges size by multiplying each pixel by scale */
+  scale?: number
 }
 
-export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodeProps) => {
-  const code = new QrCodeSvg(data)
+export const QrCode = ({
+  data = "https://www.w3.org",
+  darkBackground,
+  errorCorrection = "medium",
+  scale,
+}: QrCodeProps) => {
+  const ecl =
+    errorCorrection === "low" ? "L" : errorCorrection === "medium" ? "M" : errorCorrection === "quartile" ? "Q" : "H"
+  const code = new QrCodeSvg({ content: data, ecl, padding: 0 })
   const modules = code.qrcode.modules
   const length = modules.length
 
@@ -14,27 +24,55 @@ export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodePr
 
   const dotColor = darkBackground ? "white" : "black"
 
-  const margin = size * 0.1
-
   const divs = modules
     .map((row, colIndex) =>
       row.map((field, rowIndex) => {
+        const downFieldIsTransparent =
+          colIndex + 1 !== modules.length ? modules[colIndex + 1][rowIndex] !== !!darkBackground : false
+        const rightFieldIsTransparent =
+          rowIndex + 1 !== modules[0]?.length ? modules[colIndex][rowIndex + 1] !== !!darkBackground : false
+        const downRightFieldIsTransparent =
+          colIndex + 1 !== modules.length
+            ? rowIndex + 1 !== modules[0]?.length
+              ? modules[colIndex + 1][rowIndex + 1] !== !!darkBackground
+              : false
+            : false
+
         const isTransparent = field !== !!darkBackground
 
-        return isTransparent ? (
-          <div
-            key={`${colIndex}-${rowIndex}`}
-            style={{
-              display: "flex",
-              position: "absolute",
-              width: `${size + margin}%`,
-              height: `${size + margin}%`,
-              background: dotColor,
-              left: `${rowIndex * size - margin}%`,
-              top: `${colIndex * size - margin}%`,
-            }}
-          />
-        ) : null
+        return [
+          isTransparent ? (
+            <div
+              key={`${colIndex}-${rowIndex}`}
+              style={{
+                display: "flex",
+                position: "absolute",
+                width: `${size + (rightFieldIsTransparent ? size * 0.75 : 0)}%`,
+                height: `${
+                  size +
+                  (downRightFieldIsTransparent && rightFieldIsTransparent && downFieldIsTransparent ? size * 0.75 : 0)
+                }%`,
+                background: dotColor,
+                left: `${rowIndex * size}%`,
+                top: `${colIndex * size}%`,
+              }}
+            />
+          ) : null,
+          isTransparent && downFieldIsTransparent ? (
+            <div
+              key={`${colIndex}-${rowIndex}-down`}
+              style={{
+                display: "flex",
+                position: "absolute",
+                width: `${size}%`,
+                height: `${size + size * 0.75}%`,
+                background: dotColor,
+                left: `${rowIndex * size}%`,
+                top: `${colIndex * size}%`,
+              }}
+            />
+          ) : null,
+        ]
       })
     )
     .flat()
@@ -44,8 +82,9 @@ export const QrCode = ({ data = "https://www.w3.org", darkBackground }: QrCodePr
       style={{
         display: "flex",
         position: "relative",
-        width: `100%`,
-        height: `100%`,
+        width: scale === undefined ? `100%` : `${scale * length}px`,
+        height: scale === undefined ? `100%` : `${scale * length}px`,
+        padding: 0,
         background: "transparent",
       }}
     >
