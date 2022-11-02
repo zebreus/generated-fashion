@@ -127,7 +127,7 @@ export const ShirtPrint = ({ imageUrl, prompt, qrCodeUrl, qrCodeText, height, wi
         }}
       >
         {/* <div style={{ width: "300px", height: "300px", display: "flex", gap: "0", position: "relative", bottom: "0" }}> */}
-        <QrCode data={qrCodeUrl} scale={3} />
+        <QrCode data={qrCodeUrl} scale={3} errorCorrection={"quartile"} />
         {/* </div> */}
         <h2 style={{ fontSize: "20px", margin: "12px" }}>{qrCodeText}</h2>
       </div>
