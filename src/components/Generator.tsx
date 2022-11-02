@@ -27,8 +27,11 @@ export const Generator = () => {
   const text = useTextAnimation()
   const typedText = useTypedText(text, 50)
   const [focus, setFocus] = useState(false)
+  const [clicked, setClicked] = useState(false)
 
   const generate = async () => {
+    setClicked(true)
+    setTimeout(() => setClicked(false), 10000)
     const explorationId = generateId()
     const predictions = await Promise.all([createPrediction(value), createPrediction(value)])
 
@@ -75,10 +78,22 @@ export const Generator = () => {
             color: hsla(var(--bc) / 0.5);
           }
         `}
+        tabIndex={0}
         onInput={v => setValue(v.currentTarget.textContent || "")}
         onFocus={() => setFocus(true)}
+        onKeyDown={e => {
+          if (e.key === "Enter") {
+            e.preventDefault()
+            document?.getElementById("generateButton")?.click()
+          }
+        }}
       ></span>
-      <button className="btn btn-primary text-xl font-normal lowercase pb-1" onClick={generate} disabled={!value}>
+      <button
+        id="generateButton"
+        className="btn btn-primary text-xl font-normal lowercase pb-1"
+        onClick={generate}
+        disabled={!value || clicked}
+      >
         generate.
       </button>
     </section>
