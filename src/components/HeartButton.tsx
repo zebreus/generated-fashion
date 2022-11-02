@@ -15,6 +15,11 @@ export const HeartButton = ({ id }: HeartButtonProps) => {
         console.log("Like is currently " + like + " and will be set to " + !like)
         setLike(!like)
       }}
+      title={
+        like
+          ? "Remove from your favorites"
+          : "Add this shirt to your favorites. You can see your favorites on the start page."
+      }
     >
       {like ? (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 16 16">
