@@ -117,13 +117,12 @@ const putIntoPublicBucket = async (content: string | Buffer, name: string, type 
     const storageFile = storage.file(name)
     await storageFile.save(content, {
       contentType: type,
-      public: true,
       metadata: {
         contentType: type,
       },
     })
     storageFile.setStorageClass
-    // await storageFile.makePublic()
+    await storageFile.makePublic()
     const [metadata] = await storageFile.getMetadata()
     const previewImageUrl = ((metadata?.publicUrl?.() as string) || storageFile?.publicUrl?.())?.replace("%2F", "/")
     console.log("Put file into bucket", previewImageUrl)
