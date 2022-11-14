@@ -62,6 +62,10 @@ const takeScreenshot = async (url: string, height: number, width: number, extraW
 
 export const createShirtScreenshot = functions
   .region("europe-west3")
+  .runWith({
+    timeoutSeconds: 60,
+    memory: "2GB",
+  })
   .https.onCall(
     async ({
       widthQuery,
