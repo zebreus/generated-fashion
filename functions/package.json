@@ -12,7 +12,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "@sparticuz/chromium": "107",
-    "firebase-admin": "^11.1.0",
+    "firebase-admin": "^11.2.1",
     "firebase-functions": "^4.0.2",
     "node-fetch": "2",
     "puppeteer-core": "^18.1.0",

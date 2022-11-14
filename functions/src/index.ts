@@ -45,7 +45,7 @@ const takeScreenshot = async (url: string, height: number, width: number, extraW
   const page = await browser.newPage()
   await page.setViewport({ width, height })
   console.log("Visiting ", url)
-  await page.goto(url, { waitUntil: "networkidle2", timeout: 2000 })
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 5000 }).catch(() => undefined)
   await page.addStyleTag({ content: "nextjs-portal{display: none;}" })
   await page.addStyleTag({
     content: `:root,body{
@@ -113,8 +113,13 @@ const putIntoPublicBucket = async (content: string | Buffer, name: string, type 
     const storageFile = storage.file(name)
     await storageFile.save(content, {
       contentType: type,
+      public: true,
+      metadata: {
+        contentType: type,
+      },
     })
-    await storageFile.makePublic()
+    storageFile.setStorageClass
+    // await storageFile.makePublic()
     const [metadata] = await storageFile.getMetadata()
     const previewImageUrl = ((metadata?.publicUrl?.() as string) || storageFile?.publicUrl?.())?.replace("%2F", "/")
     console.log("Put file into bucket", previewImageUrl)
