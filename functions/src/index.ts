@@ -45,7 +45,7 @@ const takeScreenshot = async (url: string, height: number, width: number, extraW
   const page = await browser.newPage()
   await page.setViewport({ width, height })
   console.log("Visiting ", url)
-  await page.goto(url, { waitUntil: "load", timeout: 3000 })
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 2000 })
   await page.addStyleTag({ content: "nextjs-portal{display: none;}" })
   await page.addStyleTag({
     content: `:root,body{
@@ -210,7 +210,7 @@ const createPrintScreenshot = async (shirt: admin.firestore.DocumentSnapshot<adm
   const height = dpi * printHeight
 
   try {
-    const print = await takeScreenshot(url, height, width)
+    const print = await takeScreenshot(url, height, width, 500)
     if (!print) {
       throw new functions.https.HttpsError("internal", "Failed to generate screenshot for a unknown reason")
     }
