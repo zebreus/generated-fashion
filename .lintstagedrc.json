@@ -2,9 +2,13 @@
   "functions/**/*.+(ts|tsx)": [
     "prettier --write",
     "eslint --cache --fix",
-    "tsc-files -p functions/tsconfig.json --noEmit"
+    "tsc-files -p functions/tsconfig.json --noEmit --incremental false"
   ],
-  "!(functions/**/*)*.+(ts|tsx)": ["prettier --write", "eslint --cache --fix", "tsc-files --noEmit"],
+  "!(functions/**/*)*.+(ts|tsx)": [
+    "prettier --write",
+    "eslint --cache --fix",
+    "tsc-files --noEmit --incremental false"
+  ],
   "*.+(js|jsx)": ["prettier --write", "eslint --cache --fix"],
   "*.+(json|css|md|yml|yaml|scss)": ["prettier --write"]
 }
