@@ -11,7 +11,7 @@ export const getMotifUrl = (prediction?: WithRef<Prediction>, options?: { small?
   if (!prediction?._ref.id || !prediction.resultUrl) {
     return undefined
   }
-  const endpoint = options?.small ? "printSmall" : "print"
-  const url = `/api/${prediction._ref.id}/${endpoint}`
+  const imageProperty = options?.small ? "smallPrintUrl" : "printUrl"
+  const url = prediction[imageProperty]
   return url
 }

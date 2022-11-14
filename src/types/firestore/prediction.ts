@@ -9,6 +9,8 @@ type PredictionRequest = {
   actualPrompt?: string
   seed: number
   resultUrl?: undefined
+  smallPrintUrl?: undefined
+  printUrl?: undefined
   createdAt?: undefined
   previewImageUrl?: undefined
   likes?: undefined
@@ -24,6 +26,8 @@ export type Prediction =
       actualPrompt?: string
       seed: number
       resultUrl?: string
+      smallPrintUrl?: string
+      printUrl?: string
       createdAt: number
       previewImageUrl?: string
       likes: number

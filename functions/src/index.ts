@@ -6,8 +6,10 @@ import { existsSync } from "fs"
 
 import { request as httpRequest } from "http"
 import { request as httpsRequest } from "https"
+import fetch from "node-fetch"
 
 import puppeteer = require("puppeteer-core")
+import sharp = require("sharp")
 
 admin.initializeApp()
 
@@ -32,7 +34,7 @@ const getChromeExecutable = async () => {
   throw new Error("Failed to find chrome executable")
 }
 
-const takeScreenshot = async (url: string, height: number, width: number) => {
+const takeScreenshot = async (url: string, height: number, width: number, extraWait?: number) => {
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-web-security"],
     executablePath: await getChromeExecutable(),
@@ -51,7 +53,7 @@ const takeScreenshot = async (url: string, height: number, width: number) => {
     background-color: transparent !important;
   }`,
   })
-  await new Promise(r => setTimeout(r, 5000))
+  await new Promise(r => setTimeout(r, extraWait ?? 0))
   const result = await page.screenshot({ type: "webp", omitBackground: true, fullPage: true })
   await browser.close()
 
@@ -64,13 +66,11 @@ export const createShirtScreenshot = functions
     async ({
       widthQuery,
       heightQuery,
-      pathQuery,
       shirtIdQuery,
       token,
     }: {
       widthQuery: string
       heightQuery: string
-      pathQuery: string
       shirtIdQuery: string
       token: string
     }) => {
@@ -78,7 +78,7 @@ export const createShirtScreenshot = functions
         throw new functions.https.HttpsError("unauthenticated", "You need the shared secret")
       }
 
-      if (!widthQuery || !heightQuery || !pathQuery || !shirtIdQuery) {
+      if (!widthQuery || !heightQuery || !shirtIdQuery) {
         throw new functions.https.HttpsError(
           "invalid-argument",
           "Missing width, height, shirtId or path query parameters."
@@ -87,42 +87,150 @@ export const createShirtScreenshot = functions
 
       const predictionRef = admin.firestore().collection("predictions").doc(shirtIdQuery)
       const prediction = await predictionRef.get()
-      if (prediction.data()?.["previewImageUrl"] !== undefined) {
-        return { status: "OK", detail: "Already generated" }
-      }
 
-      const hostDetails = getHostDetails()
-      const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/${pathQuery}`
+      const bucketImagePromise = moveImageIntoBucket(prediction)
+      const printUrls = await createPrintScreenshot(prediction)
+      const bucketImage = await bucketImagePromise
 
-      const width = parseInt(widthQuery)
-      const height = parseInt(heightQuery)
+      await predictionRef.update({
+        resultUrl: bucketImage,
+        smallPrintUrl: printUrls.small,
+        printUrl: printUrls.big,
+      })
 
-      try {
-        const screenshot = await takeScreenshot(url, height, width)
-        if (!screenshot) {
-          throw new functions.https.HttpsError("internal", "Failed to generate screenshot for a unknown reason")
-        }
+      const previewUrl = await createPreviewScreenshot(prediction)
+      await predictionRef.update({
+        previewImageUrl: previewUrl,
+      })
 
-        const storage = admin.storage().bucket()
-        const storageFile = storage.file(`images/${shirtIdQuery}.webp`)
-        await storageFile.save(screenshot, {
-          contentType: "image/webp",
-        })
-        await storageFile.makePublic()
-        const [metadata] = await storageFile.getMetadata()
-        const previewImageUrl = (metadata?.publicUrl?.() || storageFile?.publicUrl?.())?.replace("%2F", "/")
-        console.log("Generated preview image url", previewImageUrl)
-        await predictionRef.update({ previewImageUrl })
-        return { status: "OK", url: previewImageUrl }
-      } catch (e) {
-        console.error(e)
-        if (e instanceof functions.https.HttpsError) {
-          throw e
-        }
-        throw new functions.https.HttpsError("internal", JSON.stringify(e))
-      }
+      return { status: "OK", url: previewUrl }
     }
   )
+
+const putIntoPublicBucket = async (content: string | Buffer, name: string, type = "image/webp") => {
+  try {
+    const storage = admin.storage().bucket()
+    const storageFile = storage.file(name)
+    await storageFile.save(content, {
+      contentType: type,
+    })
+    await storageFile.makePublic()
+    const [metadata] = await storageFile.getMetadata()
+    const previewImageUrl = ((metadata?.publicUrl?.() as string) || storageFile?.publicUrl?.())?.replace("%2F", "/")
+    console.log("Put file into bucket", previewImageUrl)
+    return previewImageUrl
+  } catch (e) {
+    console.error(e)
+    if (e instanceof functions.https.HttpsError) {
+      throw e
+    }
+    throw new functions.https.HttpsError("internal", JSON.stringify(e))
+  }
+}
+
+const resizeImageBuffer = async (image: Buffer | string, maxWidth: number) => {
+  const resizedBuffer = await sharp(image, { pages: -1 })
+    .rotate()
+    .resize(maxWidth, undefined, { fit: "cover", withoutEnlargement: true })
+    .webp({ quality: 92 })
+    .toBuffer()
+
+  return resizedBuffer
+}
+
+const moveImageIntoBucket = async (shirt: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>) => {
+  if (typeof shirt.data()?.["resultUrl"] !== "string") {
+    throw new functions.https.HttpsError("internal", "Failed to move nonexistent image into bucket")
+  }
+
+  const motifUrl = shirt.data()?.["resultUrl"] as string
+  if (
+    motifUrl.includes("localhost") ||
+    motifUrl.includes("127.0.0.1") ||
+    motifUrl.includes("google") ||
+    motifUrl.includes("firebase") ||
+    motifUrl.includes("appspot")
+  ) {
+    return motifUrl
+  }
+  const image = await fetch(motifUrl)
+  const imageData = Buffer.from(await image.arrayBuffer())
+  const image512 = await resizeImageBuffer(imageData, 512)
+  // const image256 = await resizeImageBuffer(imageData, 256)
+  const publicUrl = await putIntoPublicBucket(image512, `images/${shirt.id}/motif-512.webp`, `image/webp`)
+  // const publicUrl = await putIntoPublicBucket(image256, `images/${shirt.id}/motif-256.webp`, `image/webp`)
+
+  return publicUrl
+}
+
+const createPreviewScreenshot = async (shirt: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>) => {
+  if (shirt.data()?.["previewImageUrl"] !== undefined) {
+    return shirt.data()?.["previewImageUrl"]
+  }
+
+  const hostDetails = getHostDetails()
+  const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/shirt/${shirt.id}/image`
+
+  const width = 288
+  const height = 384
+
+  try {
+    const screenshot = await takeScreenshot(url, height, width, 3000)
+    if (!screenshot) {
+      throw new functions.https.HttpsError("internal", "Failed to generate screenshot for a unknown reason")
+    }
+    const publicUrl = await putIntoPublicBucket(screenshot, `images/${shirt.id}/preview-288.webp`, `image/webp`)
+
+    return publicUrl
+  } catch (e) {
+    console.error(e)
+    if (e instanceof functions.https.HttpsError) {
+      throw e
+    }
+    throw new functions.https.HttpsError("internal", JSON.stringify(e))
+  }
+}
+
+const createPrintScreenshot = async (shirt: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>) => {
+  if (typeof shirt.data()?.["printUrl"] === "string" && typeof shirt.data()?.["smallPrintUrl"] === "string") {
+    return {
+      small: shirt.data()?.["smallPrintUrl"] as string,
+      big: shirt.data()?.["printUrl"] as string,
+    }
+  }
+
+  const hostDetails = getHostDetails()
+  const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/shirt/${shirt.id}/print`
+
+  const dpi = 200
+  const printWidth = 23.4
+  const printHeight = 28.95
+
+  const width = dpi * printWidth
+  const height = dpi * printHeight
+
+  try {
+    const print = await takeScreenshot(url, height, width)
+    if (!print) {
+      throw new functions.https.HttpsError("internal", "Failed to generate screenshot for a unknown reason")
+    }
+    const printSmall = await resizeImageBuffer(print, 300)
+
+    const printPublicUrl = await putIntoPublicBucket(print, `images/${shirt.id}/print.webp`, `image/webp`)
+    const printSmallPublicUrl = await putIntoPublicBucket(printSmall, `images/${shirt.id}/print-300.webp`, `image/webp`)
+
+    return {
+      small: printSmallPublicUrl,
+      big: printPublicUrl,
+    }
+  } catch (e) {
+    console.error(e)
+    if (e instanceof functions.https.HttpsError) {
+      throw e
+    }
+    throw new functions.https.HttpsError("internal", JSON.stringify(e))
+  }
+}
 
 export const createScreenshot = functions
   .region("europe-west3")
