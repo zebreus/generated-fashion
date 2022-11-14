@@ -120,7 +120,6 @@ const putIntoPublicBucket = async (content: string | Buffer, name: string, type 
       metadata: {
         contentType: type,
         ["Cache-Control"]: "public, max-age=72000",
-        origin: ["all.toasters"],
       },
     })
     storageFile.setStorageClass
