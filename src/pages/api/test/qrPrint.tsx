@@ -6,8 +6,9 @@ export const config = {
   runtime: "experimental-edge",
 }
 
-const dpi = 150
-
+const dpi = 200
+const width = 23.4
+const height = 28.95
 const ogImagePrint = async (request: Request) => {
   initialize()
 
@@ -17,9 +18,9 @@ const ogImagePrint = async (request: Request) => {
     throw new Error("fail 356")
   }
 
-  return await ogImage(<QrTestPrint height={16 * dpi} width={12 * dpi} scale={1} />, {
-    height: 16 * dpi,
-    width: 12 * dpi,
+  return await ogImage(<QrTestPrint height={height * dpi} width={width * dpi} />, {
+    height: height * dpi,
+    width: width * dpi,
     scale: 1,
   })
 }

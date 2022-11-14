@@ -17,7 +17,13 @@ export const QrCode = ({
   const ecl =
     errorCorrection === "low" ? "L" : errorCorrection === "medium" ? "M" : errorCorrection === "quartile" ? "Q" : "H"
   const code = new QrCodeSvg({ content: data, ecl, padding: 0 })
-  const modules = code.qrcode.modules
+  const modules = darkBackground
+    ? [
+        new Array(code.qrcode.modules.length + 2).fill(false),
+        ...code.qrcode.modules.map(arr => [false, ...arr, false]),
+        new Array(code.qrcode.modules.length + 2).fill(false),
+      ]
+    : code.qrcode.modules
   const length = modules.length
 
   const size = 100 / length
