@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://*.generated.fashion", "https://generated.fashion"],
+    "method": ["GET"],
+    "responseHeader": ["Content-Type"],
+    "maxAgeSeconds": 15552000
+  }
+]
