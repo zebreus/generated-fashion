@@ -11,6 +11,10 @@ const config = {
         protocol: "https",
         hostname: "replicate.delivery",
       },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+      },
     ],
   },
   // webpack: (config, options) => {
