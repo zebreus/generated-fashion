@@ -5,7 +5,9 @@ import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
-const dpi = 150
+const dpi = 120
+const width = 23.4
+const height = 28.95
 
 const ShirtImage = () => {
   const router = useRouter()
@@ -14,7 +16,7 @@ const ShirtImage = () => {
   const prediction = usePrediction(id)
   const url = prediction?.resultUrl
 
-  const [height, setHeight] = useState(0)
+  const [screenHeight, setHeight] = useState(0)
   useEffect(() => {
     // document.documentElement.clientHeight
     setHeight(window.innerHeight)
@@ -24,11 +26,11 @@ const ShirtImage = () => {
     <div
       css={css`
         position: fixed;
-        height: ${16 * dpi}px;
-        width: ${12 * dpi}px;
+        height: ${height * dpi}px;
+        width: ${width * dpi}px;
         background: white;
         transform-origin: top left;
-        transform: scale(${height / (16 * dpi)});
+        transform: scale(${screenHeight / (height * dpi)});
       `}
     >
       <ShirtPrint
@@ -36,8 +38,8 @@ const ShirtImage = () => {
         imageUrl={url || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
         qrCodeText={"generated.fashion/28"}
         qrCodeUrl={"https://generated.fashion/shirt/" + id}
-        width={12 * dpi}
-        height={16 * dpi}
+        width={width * dpi}
+        height={height * dpi}
       />
     </div>
   )

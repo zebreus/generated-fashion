@@ -7,7 +7,9 @@ export const config = {
   runtime: "experimental-edge",
 }
 
-const dpi = 150
+const dpi = 200
+const width = 23.4
+const height = 28.95
 
 const ogImagePrint = async (request: Request) => {
   initialize()
@@ -26,13 +28,12 @@ const ogImagePrint = async (request: Request) => {
       imageUrl={prediction?.resultUrl || "https://placeimg.com/512/512"}
       qrCodeText={"generated.fashion/shirt/" + id}
       qrCodeUrl={"https://generated.fashion/shirt/" + id}
-      height={16 * dpi}
-      width={12 * dpi}
-      scale={1}
+      height={width * dpi}
+      width={height * dpi}
     />,
     {
-      height: 16 * dpi,
-      width: 12 * dpi,
+      height: height * dpi,
+      width: width * dpi,
       scale: 1,
     }
   )
