@@ -14,7 +14,6 @@ const ShirtImage = () => {
   const id = typeof router.query["id"] === "string" ? router.query["id"] : router.query["id"]?.[0]
 
   const prediction = usePrediction(id)
-  const url = prediction?.resultUrl
 
   const [screenHeight, setHeight] = useState(0)
   useEffect(() => {
@@ -28,19 +27,12 @@ const ShirtImage = () => {
         position: fixed;
         height: ${height * dpi}px;
         width: ${width * dpi}px;
-        background: white;
+        background: transparent;
         transform-origin: top left;
         transform: scale(${screenHeight / (height * dpi)});
       `}
     >
-      <ShirtPrint
-        prompt={prediction?.prompt || "Test prompt"}
-        imageUrl={url || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}
-        qrCodeText={"generated.fashion/28"}
-        qrCodeUrl={"https://generated.fashion/shirt/" + id}
-        width={width * dpi}
-        height={height * dpi}
-      />
+      {prediction ? <ShirtPrint shirt={prediction} width={width * dpi} height={height * dpi} /> : null}
     </div>
   )
 }

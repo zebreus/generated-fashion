@@ -19,7 +19,7 @@ const ShirtImage = () => {
         height: 100%;
       `}
     >
-      <CoolShirt url={motifUrl} fallback={prediction?.previewImageUrl} noMovement />
+      <CoolShirt url={motifUrl} fallback={prediction?.previewImageUrl} noMovement color={prediction?.shirtColor} />
     </div>
   )
 }

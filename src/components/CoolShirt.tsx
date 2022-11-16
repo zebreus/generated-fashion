@@ -20,11 +20,12 @@ type CoolShirtProps = {
   url: string | undefined
   fallback?: string | undefined
   noMovement?: boolean
+  color?: string
   /** Do not load the 3d model */
   onlyImage?: boolean
 }
 
-export const CoolShirt = ({ url, fallback, noMovement, onlyImage }: CoolShirtProps) => {
+export const CoolShirt = ({ url, fallback, noMovement, onlyImage, color }: CoolShirtProps) => {
   const [clientside, setClientside] = useState(typeof window !== "undefined")
   const [loaded, setLoaded] = useState(globalLoaded)
   useEffect(() => {
@@ -56,7 +57,7 @@ export const CoolShirt = ({ url, fallback, noMovement, onlyImage }: CoolShirtPro
           {loaded ? null : fallbackElement}
           <Shirt
             motif={url}
-            color="white"
+            color={color ?? `white`}
             coverLoading={!!fallback}
             cover={fallback ? fallbackElement : null}
             {...(noMovement ? { wobbleRange: 0, wobbleSpeed: 0 } : {})}

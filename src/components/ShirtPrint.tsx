@@ -1,10 +1,10 @@
 import { QrCode } from "components/QrCode"
+import { getShirtColor } from "functions/getColors"
+import { WithRef } from "hooks/firestore/FirestoreDocument"
+import { Prediction } from "types/firestore/prediction"
 
 type ShirtPrintProps = {
-  imageUrl: string
-  prompt: string
-  qrCodeUrl: string
-  qrCodeText: string
+  shirt: WithRef<Prediction>
   height: number
   width: number
   scale?: number
@@ -12,6 +12,7 @@ type ShirtPrintProps = {
 
 type PromptDisplayProps = {
   prompt: string
+  textColor: string
   maxCharacters?: number
 }
 
@@ -36,7 +37,7 @@ const truncateText = (prompt: string, maxWidth: number) => {
   return prompt.length > maxWidth ? prompt.slice(0, maxWidth - 1) + "…" : prompt
 }
 
-export const PromptDisplay = ({ prompt, maxCharacters = 370 }: PromptDisplayProps) => {
+export const PromptDisplay = ({ prompt, textColor, maxCharacters = 370 }: PromptDisplayProps) => {
   const shortenedPrompt = truncateText(prompt, maxCharacters).replace(/^./, v => v.toUpperCase())
 
   const fontSizes = [
@@ -78,16 +79,19 @@ export const PromptDisplay = ({ prompt, maxCharacters = 370 }: PromptDisplayProp
 
   return (
     <>
-      <h3 style={{ fontSize: `${fontSize}px`, textAlign: "center" }}>{shortenedPrompt}</h3>
+      <h3 style={{ fontSize: `${fontSize}px`, textAlign: "center", color: textColor }}>{shortenedPrompt}</h3>
     </>
   )
 }
 
-export const ShirtPrint = ({ imageUrl, prompt, qrCodeUrl, qrCodeText, height, width, scale }: ShirtPrintProps) => {
-  imageUrl
-  prompt
-  qrCodeUrl
-  qrCodeText
+export const ShirtPrint = ({ shirt, height, width, scale }: ShirtPrintProps) => {
+  const prompt = shirt.prompt || "Test prompt"
+  const imageUrl = shirt.resultUrl || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+  const qrCodeText = `generated.fashion/shirt/${shirt._ref.id}`
+  const qrCodeUrl = `https://generated.fashion/shirt/${shirt._ref.id}`
+
+  const shirtColor = getShirtColor(shirt)
+  const textColor = shirtColor.dark ? "white" : "black"
 
   return (
     <div
@@ -114,7 +118,7 @@ export const ShirtPrint = ({ imageUrl, prompt, qrCodeUrl, qrCodeText, height, wi
       >
         {/* eslint-disable-next-line @next/next/no-img-element*/}
         <img src={imageUrl} alt="shirt motif" style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }} />
-        <PromptDisplay prompt={prompt} />
+        <PromptDisplay prompt={prompt} textColor={textColor} />
       </div>
       <div
         style={{
@@ -127,9 +131,9 @@ export const ShirtPrint = ({ imageUrl, prompt, qrCodeUrl, qrCodeText, height, wi
         }}
       >
         {/* <div style={{ width: "300px", height: "300px", display: "flex", gap: "0", position: "relative", bottom: "0" }}> */}
-        <QrCode data={qrCodeUrl} scale={3} errorCorrection={"quartile"} />
+        <QrCode data={qrCodeUrl} scale={3} errorCorrection={"quartile"} darkBackground={shirtColor.dark} />
         {/* </div> */}
-        <h2 style={{ fontSize: "20px", margin: "12px" }}>{qrCodeText}</h2>
+        <h2 style={{ fontSize: "20px", margin: "12px", color: textColor }}>{qrCodeText}</h2>
       </div>
     </div>
   )

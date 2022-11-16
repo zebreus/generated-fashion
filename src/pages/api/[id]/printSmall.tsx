@@ -20,22 +20,15 @@ const ogImagePrint = async (request: Request) => {
 
   const prediction = await getPrediction(id)
 
-  return await ogImage(
-    <ShirtPrint
-      prompt={prediction?.prompt || "Loading (or crashed)"}
-      imageUrl={prediction?.resultUrl || "https://placeimg.com/512/512"}
-      qrCodeText={"generated.fashion/shirt/" + id}
-      qrCodeUrl={"https://generated.fashion/shirt/" + id}
-      height={16 * dpi}
-      width={12 * dpi}
-      scale={1}
-    />,
-    {
-      height: 16 * dpi,
-      width: 12 * dpi,
-      scale: 0.1,
-    }
-  )
+  if (!prediction) {
+    throw new Error("fail 33452")
+  }
+
+  return await ogImage(<ShirtPrint shirt={prediction} height={16 * dpi} width={12 * dpi} scale={1} />, {
+    height: 16 * dpi,
+    width: 12 * dpi,
+    scale: 0.1,
+  })
 }
 
 export default ogImagePrint

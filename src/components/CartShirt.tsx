@@ -15,7 +15,7 @@ export const CartShirt = ({ id }: { id: string }) => {
         contain: paint;
       `}
     >
-      <CoolShirt url={motifUrl} fallback={shirt?.previewImageUrl} onlyImage={true} />
+      <CoolShirt url={motifUrl} fallback={shirt?.previewImageUrl} onlyImage={true} color={shirt?.shirtColor} />
     </div>
   )
 }

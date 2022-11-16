@@ -1,3 +1,6 @@
+import { WithRef } from "hooks/firestore/FirestoreDocument"
+import { Prediction } from "types/firestore/prediction"
+
 export type Color = {
   /** Hex string in format #xxxxxx */
   color: string
@@ -14,4 +17,14 @@ export const getColors = (): Color[] => {
     { color: "#777777", name: "Grey", dark: true },
     { color: "#ff0000", name: "Red", dark: false },
   ]
+}
+export const getShirtColor = (shirt?: WithRef<Prediction>) => {
+  const colors = getColors()
+  const shirtColor = colors.find(color => color.color === shirt?.shirtColor) ?? {
+    color: "#ffffff",
+    name: "White",
+    dark: false,
+  }
+
+  return shirtColor
 }

@@ -32,7 +32,7 @@ const ShirtPage = () => {
               contain: paint;
             `}
           >
-            <CoolShirt url={motifUrl} fallback={prediction?.previewImageUrl} />
+            <CoolShirt url={motifUrl} fallback={prediction?.previewImageUrl} color={prediction?.shirtColor} />
           </div>
         </div>
         {/* <h3 className="divider">prompt</h3> */}
