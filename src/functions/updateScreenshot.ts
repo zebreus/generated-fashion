@@ -37,7 +37,8 @@ export const updateScreenshotIfRequired = async (
   }
 
   const motifChanged = oldPrediction.resultUrl !== newPrediction.resultUrl
-  const textChanged = oldPrediction.prompt !== newPrediction.prompt
+  const textChanged =
+    (oldPrediction.customText || oldPrediction.prompt) !== (newPrediction.customText || newPrediction.prompt)
   const colorChanged = oldPrediction.shirtColor !== newPrediction.shirtColor
   if (!motifChanged && !textChanged && !colorChanged) {
     return
