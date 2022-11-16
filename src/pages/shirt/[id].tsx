@@ -2,6 +2,7 @@ import { css } from "@emotion/react"
 import { CartButton } from "components/CartButton"
 import { CoolShirt } from "components/CoolShirt"
 import { HeartButton } from "components/HeartButton"
+import { ShirtColorSelector } from "components/ShirtColorSelector"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { getMotifUrl } from "hooks/useMotifUrl"
@@ -38,6 +39,7 @@ const ShirtPage = () => {
         <h3 className="text-xl m-4 text-center z-10">{prediction?.prompt}</h3>
         <HeartButton id={id} />
         <CartButton id={id} />
+        <ShirtColorSelector id={id} />
         <button
           onClick={async () => {
             const shareData = {
