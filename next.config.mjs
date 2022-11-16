@@ -1,6 +1,6 @@
 const config = {
   reactStrictMode: true,
-  swcMinify: true,
+  swcMinify: false,
   images: {
     remotePatterns: [
       {
