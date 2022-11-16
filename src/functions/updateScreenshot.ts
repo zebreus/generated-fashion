@@ -1,6 +1,8 @@
 import { getApp } from "firebase/app"
 import { getFunctions, httpsCallable } from "firebase/functions"
+import { WithRef } from "hooks/firestore/FirestoreDocument"
 import { initialize } from "hooks/useInitialize"
+import { Prediction } from "types/firestore/prediction"
 
 export const updateScreenshot = async (predictionId: string) => {
   initialize()
@@ -16,13 +18,32 @@ export const updateScreenshot = async (predictionId: string) => {
     { status: "OK" }
   >(functions, "createShirtScreenshot")
 
-  const result = await func({
+  await func({
     widthQuery: "288",
     heightQuery: "384",
     pathQuery: `shirt/${predictionId}/image`,
     shirtIdQuery: predictionId,
     token: process.env["FIRESTORE_RELAY_SHARED_SECRET"] || "",
   })
+}
 
-  console.log("result:", result)
+export const updateScreenshotIfRequired = async (
+  oldPrediction: WithRef<Prediction> | undefined,
+  newPrediction: WithRef<Prediction> | undefined
+) => {
+  const ready = newPrediction && oldPrediction && newPrediction.state === "succeeded" && newPrediction.resultUrl
+  if (!ready) {
+    return
+  }
+
+  const motifChanged = oldPrediction.resultUrl !== newPrediction.resultUrl
+  const textChanged = oldPrediction.prompt !== newPrediction.prompt
+  const colorChanged = oldPrediction.shirtColor !== newPrediction.shirtColor
+  if (!motifChanged && !textChanged && !colorChanged) {
+    return
+  }
+
+  updateScreenshot(newPrediction._ref.id)
+  // Ensure screenshots are triggered
+  await new Promise(r => setTimeout(r, 500))
 }

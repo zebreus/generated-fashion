@@ -1,34 +1,31 @@
-import { DocumentReference, updateDoc } from "firebase/firestore"
-import { getOwnUrl } from "functions/getOwnUrl"
-import { updateScreenshot } from "functions/updateScreenshot"
+import { generateImageIfRequired } from "functions/generateImageIfRequired"
+import { updateScreenshotIfRequired } from "functions/updateScreenshot"
+import { WithRef } from "hooks/firestore/FirestoreDocument"
 import { getPredictionRef } from "hooks/firestore/getRefs"
 import { NextApiHandler } from "next"
-import { pollPrediction, predict } from "replicate-api"
 import { Prediction } from "types/firestore/prediction"
 
-type BeforeAndAfter =
+type BeforeAndAfter<T = Record<string, unknown>> =
   | {
       before: undefined
-      after: Record<string, unknown>
+      after: T
       type: "create"
     }
   | {
-      before: Record<string, unknown>
-      after: Record<string, unknown>
+      before: T
+      after: T
       type: "update"
     }
   | {
-      before: Record<string, unknown>
+      before: T
       after: undefined
       type: "delete"
     }
 
-type RelayedChange = {
+type RelayedChange<T = Record<string, unknown>> = {
   path: string
   timestamp: string
-} & BeforeAndAfter
-
-const replicateVersion = "a9758cbfbd5f3c2094457d996681af52552901775aa2d6dd0b17fd15df959bef"
+} & BeforeAndAfter<T>
 
 const handler: NextApiHandler = async (req, res) => {
   const id = typeof req.query["id"] === "string" ? req.query["id"] : undefined
@@ -37,69 +34,28 @@ const handler: NextApiHandler = async (req, res) => {
     res.status(401).json({ detail: "unauthorized" })
     return
   }
-  const change = req.body as RelayedChange
   if (!id) {
     res.status(400).json({ detail: "invalid id" })
     return
   }
 
-  if (change.type === "delete") {
-    res.status(200).json({ state: "success" })
-    return
+  const change = req.body as RelayedChange<WithRef<Prediction>>
+  if (change.before) {
+    change.before._ref = getPredictionRef(id)
+  }
+  if (change.after) {
+    change.after._ref = getPredictionRef(id)
   }
 
-  const doc = change.after as Prediction
-  if (doc.state !== undefined) {
-    res.status(200).json({ state: "success" })
-    return
-  }
+  const tasks = [
+    generateImageIfRequired(change.before, change.after),
+    updateScreenshotIfRequired(change.before, change.after),
+  ]
 
-  const prompt = doc.prompt
-  if (!prompt) {
-    res.status(200).json({ state: "success" })
-    return
-  }
-
-  const seed = doc.seed || Math.floor(Math.random() * 100000000)
-
-  const prediction = await predict({
-    version: replicateVersion,
-    input: { prompt: prompt, num_inference_steps: 100, seed: seed },
-    token: process.env["REPLICATE_TOKEN"] || "",
-    webhook: getOwnUrl() + "/api/replicate/predictionHook",
-  })
-
-  const ref = getPredictionRef(id)
-
-  await updateDoc(ref, {
-    createdAt: Date.now(),
-    replicateId: prediction.id,
-    prompt: prompt,
-    seed: seed,
-    state: "starting",
-    version: replicateVersion,
-  })
-
-  if (process.env["NEXT_PUBLIC_USE_FIREBASE_EMULATOR"] === "true") {
-    await waitForResult(prediction.id, ref)
-  }
+  await Promise.all(tasks)
 
   res.status(200).json({ state: "success" })
   return
-}
-
-const waitForResult = async (replicateId: string, ref: DocumentReference<Prediction>) => {
-  const prediction = await pollPrediction({
-    id: replicateId,
-    token: process.env["REPLICATE_TOKEN"] || "",
-  })
-
-  await updateDoc(ref, {
-    state: prediction.status,
-    resultUrl: typeof prediction.output?.[0] === "string" ? prediction.output?.[0] : undefined,
-  })
-
-  await updateScreenshot(ref.id)
 }
 
 export default handler
