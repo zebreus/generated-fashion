@@ -172,9 +172,9 @@ const moveImageIntoBucket = async (shirt: admin.firestore.DocumentSnapshot<admin
 }
 
 const createPreviewScreenshot = async (shirt: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>) => {
-  if (shirt.data()?.["previewImageUrl"] !== undefined) {
-    return shirt.data()?.["previewImageUrl"]
-  }
+  // if (shirt.data()?.["previewImageUrl"] !== undefined) {
+  //   return shirt.data()?.["previewImageUrl"]
+  // }
 
   const hostDetails = getHostDetails()
   const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/shirt/${shirt.id}/image`
@@ -200,12 +200,12 @@ const createPreviewScreenshot = async (shirt: admin.firestore.DocumentSnapshot<a
 }
 
 const createPrintScreenshot = async (shirt: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>) => {
-  if (typeof shirt.data()?.["printUrl"] === "string" && typeof shirt.data()?.["smallPrintUrl"] === "string") {
-    return {
-      small: shirt.data()?.["smallPrintUrl"] as string,
-      big: shirt.data()?.["printUrl"] as string,
-    }
-  }
+  // if (typeof shirt.data()?.["printUrl"] === "string" && typeof shirt.data()?.["smallPrintUrl"] === "string") {
+  //   return {
+  //     small: shirt.data()?.["smallPrintUrl"] as string,
+  //     big: shirt.data()?.["printUrl"] as string,
+  //   }
+  // }
 
   const hostDetails = getHostDetails()
   const url = `${hostDetails.proto}://${hostDetails.host}:${hostDetails.port}/shirt/${shirt.id}/print`
