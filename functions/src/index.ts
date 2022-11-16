@@ -53,7 +53,7 @@ const takeScreenshot = async (url: string, height: number, width: number, extraW
     background-color: transparent !important;
   }`,
   })
-  await new Promise(r => setTimeout(r, extraWait ?? 0))
+  await new Promise(r => setTimeout(r, Math.max(extraWait ?? 0, 10)))
   const result = await page.screenshot({ type: "webp", omitBackground: true, fullPage: true })
   await browser.close()
 
@@ -139,9 +139,8 @@ const putIntoPublicBucket = async (content: string | Buffer, name: string, type 
 
 const resizeImageBuffer = async (image: Buffer | string, maxWidth: number) => {
   const resizedBuffer = await sharp(image, { pages: -1 })
-    .rotate()
-    .resize(maxWidth, undefined, { fit: "cover", withoutEnlargement: true })
-    .webp({ quality: 92 })
+    .resize(maxWidth, undefined, { fit: "cover", withoutEnlargement: true, background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .webp({ quality: 92, alphaQuality: 100 })
     .toBuffer()
 
   return resizedBuffer
