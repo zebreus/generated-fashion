@@ -3,6 +3,7 @@ import { CartButton } from "components/CartButton"
 import { CoolShirt } from "components/CoolShirt"
 import { HeartButton } from "components/HeartButton"
 import { ShirtColorSelector } from "components/ShirtColorSelector"
+import { ShirtTextInput } from "components/ShirtTextInput"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { getMotifUrl } from "hooks/useMotifUrl"
@@ -40,6 +41,7 @@ const ShirtPage = () => {
         <HeartButton id={id} />
         <CartButton id={id} />
         <ShirtColorSelector id={id} />
+        <ShirtTextInput id={id} />
         <button
           onClick={async () => {
             const shareData = {

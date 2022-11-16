@@ -14,7 +14,8 @@ type PredictionRequest = {
   createdAt?: undefined
   previewImageUrl?: undefined
   likes?: undefined
-  shirtColor?: undefined
+  shirtColor?: string
+  customText?: string
 }
 
 export type Prediction =
@@ -33,5 +34,6 @@ export type Prediction =
       previewImageUrl?: string
       likes: number
       shirtColor?: string
+      customText?: string
     }
   | PredictionRequest
