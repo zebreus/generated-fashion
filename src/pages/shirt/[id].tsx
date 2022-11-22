@@ -6,7 +6,7 @@ import { ShirtColorSelector } from "components/ShirtColorSelector"
 import { ShirtTextInput } from "components/ShirtTextInput"
 import { ShirtTransitionStyles } from "components/ShirtTransitionStyles"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
-import { getMotifUrl } from "hooks/useMotifUrl"
+import { useMotifUrl } from "hooks/useMotifUrl"
 import { getMainLayout } from "layouts/MainLayout"
 import { useRouter } from "next/router"
 
@@ -16,7 +16,7 @@ const ShirtPage = () => {
 
   const prediction = usePrediction(id)
 
-  const motifUrl = getMotifUrl(prediction)
+  const motifUrl = useMotifUrl(id)
   return (
     <>
       <ShirtTransitionStyles id={id} />

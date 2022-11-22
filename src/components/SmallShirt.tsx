@@ -6,7 +6,7 @@ import { usePageTransitionTag } from "functions/usePageTransitionTag"
 import { WithRef } from "hooks/firestore/FirestoreDocument"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
 import { createLinkClickHandler } from "hooks/useLinkClickHandler"
-import { getMotifUrl } from "hooks/useMotifUrl"
+import { useMotifUrl } from "hooks/useMotifUrl"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { Prediction } from "types/firestore/prediction"
@@ -33,7 +33,7 @@ export const SmallShirtLoader = ({ predictionId, onlyImage, id }: SmallShirtLoad
 export const SmallShirt = ({ shirt, onlyImage, id }: SmallShirtProps) => {
   const router = useRouter()
   const tag = usePageTransitionTag(`shirt-${shirt?._ref.id}`)
-  const motifUrl = getMotifUrl(shirt, { small: true })
+  const motifUrl = useMotifUrl(shirt?._ref.id, { small: true })
   return shirt ? (
     <>
       <ShirtTransitionStyles id={shirt._ref.id} />

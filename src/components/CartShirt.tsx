@@ -1,11 +1,11 @@
 import { css } from "@emotion/react"
 import { CoolShirt } from "components/CoolShirt"
 import { usePrediction } from "hooks/firestore/simple/usePrediction"
-import { getMotifUrl } from "hooks/useMotifUrl"
+import { useMotifUrl } from "hooks/useMotifUrl"
 
 export const CartShirt = ({ id }: { id: string }) => {
   const shirt = usePrediction(id)
-  const motifUrl = getMotifUrl(shirt, { small: true })
+  const motifUrl = useMotifUrl(id, { small: true })
   return (
     <div
       className="w-36 h-48"
