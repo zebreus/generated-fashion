@@ -86,7 +86,9 @@ export const PromptDisplay = ({ prompt, textColor, maxCharacters = 370 }: Prompt
 
 export const ShirtPrint = ({ shirt, height, width, scale }: ShirtPrintProps) => {
   const prompt = shirt.customText ?? (shirt.prompt || "Test prompt")
-  const imageUrl = shirt.resultUrl || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+  const imageUrl = shirt.resultUrl
+    ? shirt.resultUrl
+    : "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
   const qrCodeText = `generated.fashion/shirt/${shirt._ref.id}`
   const qrCodeUrl = `https://generated.fashion/shirt/${shirt._ref.id}`
 

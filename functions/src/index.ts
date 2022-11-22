@@ -111,7 +111,7 @@ export const createShirtScreenshot = functions
     }
   )
 
-const putIntoPublicBucket = async (content: string | Buffer, name: string, type = "image/webp") => {
+const putIntoPublicBucket = async (content: string | Buffer, name: string, type = "image/png") => {
   try {
     const storage = admin.storage().bucket()
     const storageFile = storage.file(name)
@@ -137,13 +137,14 @@ const putIntoPublicBucket = async (content: string | Buffer, name: string, type 
   }
 }
 
-const resizeImageBuffer = async (image: Buffer | string, maxWidth: number) => {
-  const resizedBuffer = await sharp(image, { pages: -1 })
-    .resize(maxWidth, undefined, { fit: "cover", withoutEnlargement: true, background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .webp({ quality: 92, alphaQuality: 100 })
-    .toBuffer()
+const resizeImageBuffer = async (image: Buffer | string, maxWidth: number, png?: boolean) => {
+  const resizedBuffer = sharp(image, { pages: -1 }).resize(maxWidth, undefined, {
+    fit: "cover",
+    withoutEnlargement: true,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
 
-  return resizedBuffer
+  return (png ? resizedBuffer.png({ quality: 90 }) : resizedBuffer.webp({ quality: 92, alphaQuality: 100 })).toBuffer()
 }
 
 const moveImageIntoBucket = async (shirt: admin.firestore.DocumentSnapshot<admin.firestore.DocumentData>) => {
@@ -163,10 +164,10 @@ const moveImageIntoBucket = async (shirt: admin.firestore.DocumentSnapshot<admin
   }
   const image = await fetch(motifUrl)
   const imageData = Buffer.from(await image.arrayBuffer())
-  const image512 = await resizeImageBuffer(imageData, 512)
+  const image512 = await resizeImageBuffer(imageData, 512, true)
   // const image256 = await resizeImageBuffer(imageData, 256)
-  const publicUrl = await putIntoPublicBucket(image512, `images/${shirt.id}/motif-512.webp`, `image/webp`)
-  // const publicUrl = await putIntoPublicBucket(image256, `images/${shirt.id}/motif-256.webp`, `image/webp`)
+  const publicUrl = await putIntoPublicBucket(image512, `images/${shirt.id}/motif-512.png`, `image/png`)
+  // const publicUrl = await putIntoPublicBucket(image256, `images/${shirt.id}/motif-256.png`, `image/png`)
 
   return publicUrl
 }
