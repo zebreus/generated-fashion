@@ -249,42 +249,42 @@ function fixQueryConstraint(constraint: QueryConstraint): FixedQueryConstraint {
   switch (constraint.type) {
     case "where": {
       const mangledWhereConstraint = constraint as {
-        ma?: WhereFilterOp
-        wa?: { segments: (string | number)[] }
+        ga?: WhereFilterOp
+        ma?: { segments: (string | number)[] }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ga?: any
+        ya?: any
       } & WhereConstraint
 
       return {
         type: mangledWhereConstraint.type,
-        _op: mangledWhereConstraint.ma ?? mangledWhereConstraint._op,
-        _value: mangledWhereConstraint.ga ?? mangledWhereConstraint._value,
-        _field: mangledWhereConstraint.wa ?? mangledWhereConstraint._field,
+        _op: mangledWhereConstraint.ga ?? mangledWhereConstraint._op,
+        _value: mangledWhereConstraint.ya ?? mangledWhereConstraint._value,
+        _field: mangledWhereConstraint.ma ?? mangledWhereConstraint._field,
       }
     }
     case "orderBy": {
       const mangledOrderByConstraint = constraint as {
-        ya?: OrderByDirection
-        wa?: { segments: (string | number)[] }
+        pa?: OrderByDirection
+        ma?: { segments: (string | number)[] }
       } & OrderByConstraint
 
       return {
         type: mangledOrderByConstraint.type,
-        _direction: mangledOrderByConstraint.ya ?? mangledOrderByConstraint._direction,
-        _field: mangledOrderByConstraint.wa ?? mangledOrderByConstraint._field,
+        _direction: mangledOrderByConstraint.pa ?? mangledOrderByConstraint._direction,
+        _field: mangledOrderByConstraint.ma ?? mangledOrderByConstraint._field,
       }
     }
     case "limit":
     case "limitToLast": {
       const mangledLimitConstraint = constraint as {
-        pa?: number
-        Ia?: "L" | "F"
+        Ia?: number
+        Ta?: "L" | "F"
       } & LimitConstraint
 
       return {
         type: mangledLimitConstraint.type,
-        _limit: mangledLimitConstraint.pa ?? mangledLimitConstraint._limit,
-        _limitType: mangledLimitConstraint.Ia ?? mangledLimitConstraint._limitType,
+        _limit: mangledLimitConstraint.Ia ?? mangledLimitConstraint._limit,
+        _limitType: mangledLimitConstraint.Ta ?? mangledLimitConstraint._limitType,
       }
     }
     case "startAt":
